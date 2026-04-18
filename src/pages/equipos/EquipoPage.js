@@ -11,6 +11,7 @@ import {
   validarOrganizacion,
   confirmarOrganizacion,
   disconnectOrganizacion,
+  disconnectProyecto,
   validarProyecto,
   confirmarProyecto,
 } from '../../services/Equipos_Api';
@@ -59,6 +60,8 @@ const EquipoPage = () => {
 
   const [showConfirmChangesPopup, setShowConfirmChangesPopup] = useState(false);
   const [showDisconnectPopup, setShowDisconnectPopup] = useState(false);
+  const [showDisconnectPopupTaiga, setShowDisconnectPopupTaiga] =
+    useState(false);
 
   const [gitOrgUrl, setGitOrgUrl] = useState('');
   const [validationResults, setValidationResults] = useState(null);
@@ -68,6 +71,7 @@ const EquipoPage = () => {
 
   const [TaigaUrl, setTaigaUrl] = useState('');
   const [comprobandoValidacionT, setComprobandoValidacionT] = useState(false);
+  const [validationResultsT, setValidationResultsT] = useState(null);
   const [taigaProyecto, setTaigaProyecto] = useState(null);
 
   const token = localStorage.getItem('jwtToken');
@@ -175,7 +179,19 @@ const EquipoPage = () => {
         equipo.taigaUserProf,
         token,
       );
-      setValidationResults(resultados);
+      setValidationResultsT(resultados);
+      if (
+        !(
+          resultados?.professoratEsMiembroT &&
+          resultados?.todosUsuariosTaigaConfigurados &&
+          resultados?.todosMiembrosEnProyecto &&
+          resultados?.proyectoPublico
+        )
+      ) {
+        alert(
+          'Encara hi ha requisits sense complir. Si us plau, revisa la configuració a Taiga abans de tornar a validar.',
+        );
+      }
     } catch (error) {
       setError('Error al validar el projecte.');
       //setComprobandoValidacionT(false);
@@ -186,7 +202,7 @@ const EquipoPage = () => {
   const handleConfirmTaiga = async () => {
     try {
       await confirmarProyecto(equipo.id, TaigaUrl, token);
-      alert('Proyecto confirmado con éxito.');
+      alert('Projecte confirmat amb èxit.');
       const updatedEquipo = await getEquipoDetalle(id, token);
       setEquipo(updatedEquipo);
       setTaigaProyecto(updatedEquipo.taigaProyecto);
@@ -205,6 +221,22 @@ const EquipoPage = () => {
     } catch (error) {
       console.error('Error al desconnectar la organització:', error);
       alert('Error al desconnectar la organització.');
+    }
+  };
+
+  //desconectar prj
+  const handleConfirmDisconnectTaiga = async () => {
+    try {
+      await disconnectProyecto(equipo.id, token);
+      setShowDisconnectPopupTaiga(false);
+      setEquipo((prev) => ({ ...prev, taigaProyecto: null }));
+      alert('Projecte de Taiga desconnectat correctament.');
+      setTaigaUrl('');
+      setValidationResultsT(null);
+      setComprobandoValidacionT(false);
+    } catch (error) {
+      console.error('Error al desconnectar el projecte:', error);
+      alert('Error al desconnectar el projecte.');
     }
   };
 
@@ -677,7 +709,17 @@ const EquipoPage = () => {
           {isProfesor ? (
             equipo.taigaProyecto ? (
               <>
-                <p>✅ El projecte de Taiga està configurat:</p>
+                <p>
+                  ✅ El projecte de Taiga està configurat:
+                  <a
+                    href={`https://taiga.com/${equipo.taigaProyecto}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="github-org-link"
+                  >
+                    {equipo.taigaProyecto}
+                  </a>
+                </p>
               </>
             ) : (
               <p>
@@ -691,7 +733,7 @@ const EquipoPage = () => {
                 // organización ya está configurada
                 <>
                   <p>
-                    ✅ El projecte de Taiga està configurat::
+                    ✅ El projecte de Taiga està configurat:
                     <a
                       href={`https://taiga.com/${equipo.taigaProyecto}`}
                       target="_blank"
@@ -702,7 +744,7 @@ const EquipoPage = () => {
                     </a>
                     <button
                       className="disconnect-button"
-                      onClick={() => setShowDisconnectPopup(true)}
+                      onClick={() => setShowDisconnectPopupTaiga(true)}
                     >
                       Desconnectar projecte
                     </button>
@@ -720,11 +762,11 @@ const EquipoPage = () => {
                         Introdueix la URL del projecte de Taiga del teu equip.
                         Assegura&apos;t de que el perfil del professor
                         <strong> {equipo.taigaUserProf}</strong> n&apos;és
-                        membre
+                        membre i que el projecte es <strong>públic</strong>.
                       </p>
                       <input
                         type="text"
-                        placeholder="https://taiga/project/projecte"
+                        placeholder="https://taiga.com/project/nom-projecte"
                         value={TaigaUrl}
                         onChange={(e) => setTaigaUrl(e.target.value)}
                         className="git-org-input-field"
@@ -740,10 +782,10 @@ const EquipoPage = () => {
                   ) : (
                     <div className="validation-results">
                       <p>
-                        {validationResults?.professoratEsMiembroT ? (
+                        {validationResultsT?.professoratEsMiembroT ? (
                           <>
                             ✅ L&apos;usuari{' '}
-                            <strong>{equipo.taigaUserProf}</strong>
+                            <strong>{equipo.taigaUserProf} </strong>
                             és membre del projecte.
                           </>
                         ) : (
@@ -756,24 +798,24 @@ const EquipoPage = () => {
                       </p>
 
                       <p>
-                        {validationResults?.todosUsuariosTaigaConfigurados
+                        {validationResultsT?.todosUsuariosTaigaConfigurados
                           ? '✅ Tots els membres tenen un compte de Taiga associat.'
                           : '❌ No tots els membres tenen un compte de Taiga associat.'}
                       </p>
                       <p>
-                        {validationResults?.todosMiembrosEnProyecto
+                        {validationResultsT?.todosMiembrosEnProyecto
                           ? '✅ Tots els membres pertanyen al projecte de Taiga.'
                           : '❌ No tots els membres pertanyen al projecte de Taiga.'}
                       </p>
                       <p>
-                        {validationResults?.proyectoPublico
+                        {validationResultsT?.proyectoPublico
                           ? '✅ El projecte és públic.'
                           : '❌ El projecte és privat.'}
                       </p>
-                      {validationResults?.professoratEsMiembroT &&
-                      validationResults?.todosUsuariosTaigaConfigurados &&
-                      validationResults?.todosMiembrosEnProyecto &&
-                      validationResults?.proyectoPublico ? (
+                      {validationResultsT?.professoratEsMiembroT &&
+                      validationResultsT?.todosUsuariosTaigaConfigurados &&
+                      validationResultsT?.todosMiembrosEnProyecto &&
+                      validationResultsT?.proyectoPublico ? (
                         <button
                           onClick={async () => {
                             try {
@@ -789,8 +831,11 @@ const EquipoPage = () => {
                         </button>
                       ) : (
                         <>
+                          {error && (
+                            <div className="error-message-inline">{error}</div>
+                          )}
                           <button
-                            onClick={handleConfirmTaiga}
+                            onClick={handleValidateTaiga}
                             className="validate-git-org-button"
                           >
                             Torna a validar
@@ -975,6 +1020,28 @@ const EquipoPage = () => {
               <button
                 className="cancel-button"
                 onClick={() => setShowDisconnectPopup(false)}
+              >
+                Cancel·lar
+              </button>
+            </div>
+          </div>
+        )}
+        {showDisconnectPopupTaiga && (
+          <div className="confirm-popup">
+            <div className="changes-popup-content">
+              <h>
+                Segur que vols desvincular aquest projecte de Taiga de
+                l&apos;equip?
+              </h>
+              <button
+                className="confirm-button"
+                onClick={handleConfirmDisconnectTaiga}
+              >
+                Confirmar
+              </button>
+              <button
+                className="cancel-button"
+                onClick={() => setShowDisconnectPopupTaiga(false)}
               >
                 Cancel·lar
               </button>

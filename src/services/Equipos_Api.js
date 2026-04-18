@@ -422,3 +422,23 @@ export const disconnectOrganizacion = async (equipoId, token) => {
 
   return await response.json();
 };
+
+//desconectar prj de equipo
+export const disconnectProyecto = async (equipoId, token) => {
+  const response = await fetch(`${API_BASE_URL}/taiga/disconnect-proyecto`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ equipoId }),
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `Error al desconnectar el proyecto: ${response.statusText}`,
+    );
+  }
+
+  return await response.json();
+};
