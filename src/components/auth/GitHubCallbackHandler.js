@@ -5,8 +5,8 @@ const GitHubCallbackHandler = ({ onGitHubConnected }) => {
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
     const code = queryParams.get('code');
-
-    if (code) {
+    const intent = sessionStorage.getItem('authIntent');
+    if (code && intent !== 'taiga') {
       conectarGitHub(code)
         .then((data) => {
           if (data.message === 'Cuenta de GitHub asociada exitosamente') {

@@ -305,6 +305,68 @@ export const confirmarOrganizacion = async (
   }
 };
 
+// validar proyecto
+export const validarProyecto = async (
+  profesorId,
+  miembrosIds,
+  proyectoUrl,
+  profesorTaiga,
+  token,
+) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/taiga/validar-proyecto`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        profesorId,
+        miembrosIds,
+        proyectoUrl,
+        profesorTaiga,
+      }),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Error al validar el proyecto.');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error al validar el proyecto:', error);
+    throw new Error(
+      error.message || 'Error desconocido al validar el proyecto.',
+    );
+  }
+};
+
+//confirmar en bd prj
+export const confirmarProyecto = async (equipoId, proyectoUrl, token) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/taiga/confirmar-proyecto`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        equipoId,
+        proyectoUrl,
+      }),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Error al confirmar el proyecto.');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error al confirmar el proyecto:', error);
+    throw new Error(
+      error.message || 'Error desconocido al confirmar el proyecto.',
+    );
+  }
+};
+
 // Obtener métricas del equipo
 // Obtener métricas del equipo
 export const getMetrics = async (org, estudiantesIds, idEquipo, token) => {

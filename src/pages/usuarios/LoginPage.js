@@ -50,7 +50,7 @@ const LoginPage = () => {
   };
 
   return (
-    <GoogleOAuthProvider clientId="556635874733-kcqieabaqpplmsbp1lnm15qjg9c78bp0.apps.googleusercontent.com">
+    <GoogleOAuthProvider clientId="116542465790-12ggck24umtgna96oo0i0kdgd0n4435j.apps.googleusercontent.com">
       <div className="login-page">
         <div className="login-box">
           <h1>CERCLES</h1>

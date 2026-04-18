@@ -11,6 +11,8 @@ import {
   validarOrganizacion,
   confirmarOrganizacion,
   disconnectOrganizacion,
+  validarProyecto,
+  confirmarProyecto,
 } from '../../services/Equipos_Api';
 import {
   isEvaluacionActiva,
@@ -63,6 +65,10 @@ const EquipoPage = () => {
   const [comprobandoValidacion, setComprobandoValidacion] = useState(false);
   const [gitOrganizacion, setGitOrganizacion] = useState(null);
   const [estIds, setEstIds] = useState(null);
+
+  const [TaigaUrl, setTaigaUrl] = useState('');
+  const [comprobandoValidacionT, setComprobandoValidacionT] = useState(false);
+  const [taigaProyecto, setTaigaProyecto] = useState(null);
 
   const token = localStorage.getItem('jwtToken');
   const idEstudiante = parseInt(localStorage.getItem('id'));
@@ -155,6 +161,37 @@ const EquipoPage = () => {
       setGitOrganizacion(updatedEquipo.gitOrganizacion);
     } catch (error) {
       setError('Error al confirmar la organización.');
+    }
+  };
+
+  // Validar proyecto
+  const handleValidateTaiga = async () => {
+    try {
+      setComprobandoValidacionT(true); // Activar la validación
+      const resultados = await validarProyecto(
+        equipo.evaluadorId,
+        equipo.estudiantes.map((miembro) => miembro.id),
+        TaigaUrl,
+        equipo.taigaUserProf,
+        token,
+      );
+      setValidationResults(resultados);
+    } catch (error) {
+      setError('Error al validar el projecte.');
+      //setComprobandoValidacionT(false);
+    }
+  };
+
+  // Confirmar el proyecto si todos los checks son correctos
+  const handleConfirmTaiga = async () => {
+    try {
+      await confirmarProyecto(equipo.id, TaigaUrl, token);
+      alert('Proyecto confirmado con éxito.');
+      const updatedEquipo = await getEquipoDetalle(id, token);
+      setEquipo(updatedEquipo);
+      setTaigaProyecto(updatedEquipo.taigaProyecto);
+    } catch (error) {
+      setError('Error al confirmar el proyecto.');
     }
   };
 
@@ -287,9 +324,9 @@ const EquipoPage = () => {
     return <div>Carregant detalls de l&apos;equip...</div>;
   }
 
-  if (error) {
-    return <div className="error-message">{error}</div>;
-  }
+  //if (error) {
+  //  return <div className="error-message">{error}</div>;
+  //}
 
   if (!equipo) {
     return <div>No s&apos;ha trobat la informació de l&apos;equip.</div>;
@@ -398,7 +435,7 @@ const EquipoPage = () => {
                   </>
                 )}
 
-                {/* Link a Taiga 
+                {/* Link a Taiga */}
                 {equipo.taigaProyecto ? (
                   <Link
                     to={`/equipo/${id}/taiga-metrics?project=${equipo.taigaProyecto}`}
@@ -414,7 +451,7 @@ const EquipoPage = () => {
                       Taiga, per tant no hi ha dades a veure.
                     </span>
                   </div>
-                )}*/}
+                )}
 
                 {/* Link a dades d'avaluacions */}
                 <Link
@@ -634,7 +671,7 @@ const EquipoPage = () => {
             </>
           )}
         </div>
-        {/* Organización Taiga 
+        {/* Organización Taiga */}
         <div className="equipo-section">
           <h2>Projecte de Taiga</h2>
           {isProfesor ? (
@@ -648,9 +685,132 @@ const EquipoPage = () => {
               </p>
             )
           ) : (
-            <></>
+            // Vista para estudiantes
+            <>
+              {equipo.taigaProyecto ? (
+                // organización ya está configurada
+                <>
+                  <p>
+                    ✅ El projecte de Taiga està configurat::
+                    <a
+                      href={`https://taiga.com/${equipo.taigaProyecto}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="github-org-link"
+                    >
+                      {equipo.taigaProyecto}
+                    </a>
+                    <button
+                      className="disconnect-button"
+                      onClick={() => setShowDisconnectPopup(true)}
+                    >
+                      Desconnectar projecte
+                    </button>
+                  </p>
+                </>
+              ) : (
+                // Si la organización aún no está configurada
+                <>
+                  {!comprobandoValidacionT ? (
+                    <>
+                      {error && (
+                        <div className="error-message-inline">{error}</div>
+                      )}
+                      <p>
+                        Introdueix la URL del projecte de Taiga del teu equip.
+                        Assegura&apos;t de que el perfil del professor
+                        <strong> {equipo.taigaUserProf}</strong> n&apos;és
+                        membre
+                      </p>
+                      <input
+                        type="text"
+                        placeholder="https://taiga/project/projecte"
+                        value={TaigaUrl}
+                        onChange={(e) => setTaigaUrl(e.target.value)}
+                        className="git-org-input-field"
+                      />
+                      <button
+                        onClick={handleValidateTaiga}
+                        className="validate-git-org-button"
+                        disabled={!TaigaUrl}
+                      >
+                        Validar
+                      </button>
+                    </>
+                  ) : (
+                    <div className="validation-results">
+                      <p>
+                        {validationResults?.professoratEsMiembroT ? (
+                          <>
+                            ✅ L&apos;usuari{' '}
+                            <strong>{equipo.taigaUserProf}</strong>
+                            és membre del projecte.
+                          </>
+                        ) : (
+                          <>
+                            ❌ L&apos;usuari{' '}
+                            <strong>{equipo.taigaUserProf} </strong>
+                            no és membre del projecte.
+                          </>
+                        )}
+                      </p>
+
+                      <p>
+                        {validationResults?.todosUsuariosTaigaConfigurados
+                          ? '✅ Tots els membres tenen un compte de Taiga associat.'
+                          : '❌ No tots els membres tenen un compte de Taiga associat.'}
+                      </p>
+                      <p>
+                        {validationResults?.todosMiembrosEnProyecto
+                          ? '✅ Tots els membres pertanyen al projecte de Taiga.'
+                          : '❌ No tots els membres pertanyen al projecte de Taiga.'}
+                      </p>
+                      <p>
+                        {validationResults?.proyectoPublico
+                          ? '✅ El projecte és públic.'
+                          : '❌ El projecte és privat.'}
+                      </p>
+                      {validationResults?.professoratEsMiembroT &&
+                      validationResults?.todosUsuariosTaigaConfigurados &&
+                      validationResults?.todosMiembrosEnProyecto &&
+                      validationResults?.proyectoPublico ? (
+                        <button
+                          onClick={async () => {
+                            try {
+                              await handleConfirmTaiga();
+                              alert('Confirmat!');
+                            } catch (error) {
+                              setError('Error.');
+                            }
+                          }}
+                          className="confirm-git-org-button"
+                        >
+                          Confirmar organització
+                        </button>
+                      ) : (
+                        <>
+                          <button
+                            onClick={handleConfirmTaiga}
+                            className="validate-git-org-button"
+                          >
+                            Torna a validar
+                          </button>
+                          <button
+                            className="error-message-button"
+                            onClick={() => setComprobandoValidacionT(false)}
+                          >
+                            Torna enrere
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </>
+              )}
+            </>
           )}
-        </div>*/}
+        </div>
+
         <div className="equipo-section">
           <h2>Membres de l&apos;equip</h2>
           {isEditing ? (
