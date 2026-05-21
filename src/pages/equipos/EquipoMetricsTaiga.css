@@ -1,0 +1,264 @@
+.metrics-page {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+}
+
+.metrics-content {
+  flex: 1;
+  margin-left: 260px; /* Espacio acorde a la barra lateral */
+  padding: 20px;
+  max-width: 80%; /* Reducir ancho máximo */
+  box-sizing: border-box;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 40px;
+  font-size: 2rem;
+  color: #333;
+}
+
+.expandable-header {
+  cursor: pointer;
+  text-align: center;
+  font-size: 1.8rem; /* Tamaño de fuente más grande */
+  font-weight: bold;
+  color: #007bff; /* Azul destacado */
+  margin: 20px 0;
+  transition:
+    color 0.3s ease,
+    transform 0.2s ease;
+}
+
+.expandable-header:hover {
+  color: #0056b3; /* Azul más oscuro al pasar el ratón */
+  transform: scale(1.05); /* Efecto de zoom al pasar el ratón */
+}
+
+.expandable-header:active {
+  transform: scale(0.95); /* Efecto de clic */
+}
+
+h3 {
+  text-align: center;
+  padding-top: 20px;
+  padding-left: 450px;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: #555;
+  transition: color 0.2s ease;
+}
+
+h3:hover {
+  color: #333;
+}
+
+table {
+  width: 80%;
+  margin: 0 auto; /* Centrar tabla */
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+th {
+  color: #6c9975;
+  font-weight: bold;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.mitjana-column {
+  background-color: rgba(173, 216, 230, 0.5); /* Azul claro */
+  font-weight: bold;
+  color: #333;
+}
+
+th.mitjana-column {
+  background-color: rgba(135, 206, 250, 0.7); /* Azul más oscuro */
+}
+
+.legend-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legend-square {
+  width: 15px;
+  height: 15px;
+  border-radius: 3px;
+}
+
+.legend-square.green {
+  background-color: #ccffcc;
+}
+
+.legend-square.blue {
+  background-color: #cce5ff;
+}
+
+.charts-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 100px;
+  width: 100%;
+}
+
+.chart-row {
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.chart-container {
+  flex: 1;
+  max-width: 45%;
+  height: 400px;
+}
+
+.chart-container-large {
+  flex: 1;
+  max-width: 45%;
+  height: 400px;
+}
+
+.chart-container h2 {
+  margin-bottom: 10px;
+}
+
+/*loading*/
+.loading-container {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.progress-bar {
+  width: 50%;
+  background-color: #ddd;
+  height: 20px;
+  margin: 20px auto;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress {
+  height: 100%;
+  background-color: #6c9975;
+  transition: width 0.1s linear;
+}
+
+/* Estilo para las filas destacadas */
+tr.highlight-green {
+  background-color: #ccffcc; /* Verde claro */
+}
+
+tr.highlight-blue {
+  background-color: #cce5ff; /* Azul claro */
+}
+
+/* Botón de volver */
+.back-button {
+  background-color: #6c9975;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-bottom: 20px;
+  transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+  background-color: #5b8263;
+}
+
+.loading-gif {
+  width: 500px;
+  height: 500px;
+  margin: 20px auto;
+}
+
+.loading-text {
+  font-size: 1.2rem;
+  color: #555;
+}
+
+/* =========================================================
+   NUEVOS ESTILOS: TABLA DE TAIGA (ESTILO EXCEL)
+   ========================================================= */
+
+.tabla-metricas-excel {
+  width: 100%;
+  margin: 0;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Sobrescribir bordes generales para la tabla Taiga */
+.tabla-metricas-excel th,
+.tabla-metricas-excel td {
+  border: 1px solid #a0a0a0;
+  padding: 8px 12px;
+}
+
+/* Sobrescribir colores globales (el verde original y fondo de filas pares) */
+.tabla-metricas-excel tr:nth-child(even) th,
+.tabla-metricas-excel tr:nth-child(even) td {
+  background-color: transparent;
+}
+
+/* Columna izquierda (Títulos) */
+.tabla-metricas-excel th.celda-titulo,
+.tabla-metricas-excel td.celda-titulo {
+  background-color: #8faadc;
+  color: white;
+  font-weight: bold;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Cabeceras de los estudiantes */
+.tabla-metricas-excel th.celda-cabecera-estudiante {
+  background-color: #00ccff;
+  color: black;
+  font-weight: bold;
+}
+
+/* Celdas de números normales (se fuerza para tapar el nth-child general) */
+.tabla-metricas-excel td.celda-valor,
+.tabla-metricas-excel tr:nth-child(even) td.celda-valor {
+  background-color: #d9e1f2;
+  color: black;
+}
+
+/* Columna de Totales (derecha del todo) */
+.tabla-metricas-excel th.celda-total-cabecera,
+.tabla-metricas-excel td.celda-total-valor,
+.tabla-metricas-excel tr:nth-child(even) td.celda-total-valor {
+  background-color: #ffffff;
+  font-weight: bold;
+  color: black;
+}

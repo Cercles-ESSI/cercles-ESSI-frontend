@@ -442,3 +442,44 @@ export const disconnectProyecto = async (equipoId, token) => {
 
   return await response.json();
 };
+
+// 1. Obtener las estadísticas locales de la base de datos
+export const getTaigaMetrics = async (equipoId, proyecto, token) => {
+  const response = await fetch(
+    `${API_BASE_URL}/taiga/equipo/${equipoId}/metrics?proyecto=${proyecto}`,
+    {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      "No s'han pogut carregar les estadístiques locals de Taiga.",
+    );
+  }
+
+  return await response.json();
+};
+
+// 2. Forzar la sincronización en segundo plano con la API de Taiga
+export const syncTaigaMetrics = async (equipoId, proyecto, token) => {
+  const response = await fetch(
+    `${API_BASE_URL}/taiga/equipo/${equipoId}/sincronizar?proyecto=${proyecto}`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error('Fallo en la sincronització amb Taiga.');
+  }
+
+  return response.ok; // Devuelve true si todo ha ido bien
+};

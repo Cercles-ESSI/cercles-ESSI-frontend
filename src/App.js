@@ -12,6 +12,7 @@ import EquiposPage from './pages/equipos/EquiposPage';
 import EquipoPage from './pages/equipos/EquipoPage';
 import CrearEquipo from './pages/equipos/CrearEquipo';
 import EquipoMetricsPage from './pages/equipos/EquipoMetricsPage';
+import EquipoMetricsTaiga from './pages/equipos/EquipoMetricsTaiga';
 import DatosGeneralesEquipoPage from './pages/equipos/DatosGeneralesEquipoPage';
 import EvaluacionPage from './pages/evaluaciones/EvaluacionPage';
 import EvaluacionesGeneralesPage from './pages/evaluaciones/EvaluacionesGeneralesPage';
@@ -100,6 +101,14 @@ function App() {
           element={
             <PrivateRoute requiredRole="Profesor">
               <EquipoMetricsPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/equipo/:id/taiga-metrics"
+          element={
+            <PrivateRoute requiredRole="Profesor">
+              <EquipoMetricsTaiga />
             </PrivateRoute>
           }
         />
