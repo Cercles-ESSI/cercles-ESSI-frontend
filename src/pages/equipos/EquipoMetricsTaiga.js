@@ -162,54 +162,111 @@ const EquipoMetricsTaiga = () => {
             <p className="loading-text">🔄 Carregant dades des de Taiga...</p>
           ) : (
             datosMetricas &&
-            datosMetricas.metricasEstudiantes && (
-              <div className="table-responsive">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Dades</th>
-                      {datosMetricas.metricasEstudiantes.map(
-                        (estudiante, index) => (
-                          <th key={index}>{estudiante.nombreEstudiante}</th>
-                        ),
-                      )}
-                      <th className="mitjana-column">Total</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {/* FILA 1: Valores Absolutos */}
-                    <tr>
-                      <td>Total tasques</td>
-                      {datosMetricas.metricasEstudiantes.map(
-                        (estudiante, index) => (
-                          <td key={index}>{estudiante.totalTareas}</td>
-                        ),
-                      )}
-                      <td className="mitjana-column">
-                        {datosMetricas.totalTareasEquipo}
-                      </td>
-                    </tr>
+            datosMetricas.estadisticasTareas && (
+              <>
+                {/* TABLA 1: VALORES ABSOLUTOS */}
+                <div className="table-responsive">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Dades</th>
+                        {datosMetricas.estadisticasTareas.metricasEstudiantes.map(
+                          (estudiante, index) => (
+                            <th key={index}>{estudiante.nombreEstudiante}</th>
+                          ),
+                        )}
+                        <th className="mitjana-column">Total</th>
+                      </tr>
+                    </thead>
 
-                    {/* FILA 2: Porcentajes */}
-                    <tr>
-                      <td>Total tasques (%)</td>
-                      {datosMetricas.metricasEstudiantes.map(
-                        (estudiante, index) => {
-                          const porcentaje = estudiante.porcentajeTareas || 0;
-                          const porcentajeFormateado =
-                            porcentaje.toLocaleString('es-ES', {
-                              minimumFractionDigits: 1,
-                              maximumFractionDigits: 1,
-                            });
+                    <tbody>
+                      {/* Valores Absolutos de Tareas */}
+                      <tr>
+                        <td>Total tasques</td>
+                        {datosMetricas.estadisticasTareas.metricasEstudiantes.map(
+                          (estudiante, index) => (
+                            <td key={index}>{estudiante.totalTareas}</td>
+                          ),
+                        )}
+                        <td className="mitjana-column">
+                          {datosMetricas.estadisticasTareas.totalTareasEquipo}
+                        </td>
+                      </tr>
 
-                          return <td key={index}>{porcentajeFormateado}%</td>;
-                        },
-                      )}
-                      <td className="mitjana-column">100,0%</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+                      {/* Valores Absolutos de Historias */}
+                      <tr>
+                        <td>Total històries participades</td>
+                        {datosMetricas.estadisticasHistorias.metricasEstudiantes.map(
+                          (estudiante, index) => (
+                            <td key={index}>
+                              {estudiante.totalHistoriasParticipadas}
+                            </td>
+                          ),
+                        )}
+                        <td className="mitjana-column">
+                          {datosMetricas.estadisticasHistorias.totalHistorias}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* TABLA 2: PORCENTAJES */}
+                <div className="table-responsive">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Dades</th>
+                        {datosMetricas.estadisticasTareas.metricasEstudiantes.map(
+                          (estudiante, index) => (
+                            <th key={index}>{estudiante.nombreEstudiante}</th>
+                          ),
+                        )}
+                        <th className="mitjana-column">Total</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {/* Porcentajes de Tareas */}
+                      <tr>
+                        <td>Total tasques (%)</td>
+                        {datosMetricas.estadisticasTareas.metricasEstudiantes.map(
+                          (estudiante, index) => {
+                            const porcentaje = estudiante.porcentajeTareas || 0;
+                            const porcentajeFormateado =
+                              porcentaje.toLocaleString('es-ES', {
+                                minimumFractionDigits: 1,
+                                maximumFractionDigits: 1,
+                              });
+
+                            return <td key={index}>{porcentajeFormateado}%</td>;
+                          },
+                        )}
+                        <td className="mitjana-column">100,0%</td>
+                      </tr>
+
+                      {/* Porcentajes de Historias */}
+                      <tr>
+                        <td>Participació en històries (%)</td>
+                        {datosMetricas.estadisticasHistorias.metricasEstudiantes.map(
+                          (estudiante, index) => {
+                            const porcentaje =
+                              estudiante.porcentajeHistorias || 0;
+                            const porcentajeFormateado =
+                              porcentaje.toLocaleString('es-ES', {
+                                minimumFractionDigits: 1,
+                                maximumFractionDigits: 1,
+                              });
+
+                            return <td key={index}>{porcentajeFormateado}%</td>;
+                          },
+                        )}
+                        <td className="mitjana-column">-</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )
           )}
         </div>
