@@ -43,7 +43,7 @@ h1 {
 h3 {
   text-align: center;
   padding-top: 20px;
-  padding-left: 450px;
+  /*padding-left: 450px;*/
   margin-bottom: 20px;
   font-size: 1.5rem;
   color: #555;
@@ -204,61 +204,30 @@ tr.highlight-blue {
   color: #555;
 }
 
-/* =========================================================
-   NUEVOS ESTILOS: TABLA DE TAIGA (ESTILO EXCEL)
-   ========================================================= */
-
-.tabla-metricas-excel {
-  width: 100%;
-  margin: 0;
-  border-collapse: collapse;
-  font-family: Arial, sans-serif;
-  font-size: 14px;
+.taiga-charts h3 {
   text-align: center;
+  margin-top: 3rem;
+  margin-bottom: 2rem;
 }
 
-/* Sobrescribir bordes generales para la tabla Taiga */
-.tabla-metricas-excel th,
-.tabla-metricas-excel td {
-  border: 1px solid #a0a0a0;
-  padding: 8px 12px;
+.chart-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+  margin-bottom: 3rem;
 }
 
-/* Sobrescribir colores globales (el verde original y fondo de filas pares) */
-.tabla-metricas-excel tr:nth-child(even) th,
-.tabla-metricas-excel tr:nth-child(even) td {
-  background-color: transparent;
+.chart-container,
+.chart-container-large {
+  flex: 1 1 45%;
+  min-width: 320px;
+  text-align: center;
+  margin-bottom: 2rem;
 }
 
-/* Columna izquierda (Títulos) */
-.tabla-metricas-excel th.celda-titulo,
-.tabla-metricas-excel td.celda-titulo {
-  background-color: #8faadc;
-  color: white;
-  font-weight: bold;
-  text-align: right;
-  white-space: nowrap;
-}
-
-/* Cabeceras de los estudiantes */
-.tabla-metricas-excel th.celda-cabecera-estudiante {
-  background-color: #00ccff;
-  color: black;
-  font-weight: bold;
-}
-
-/* Celdas de números normales (se fuerza para tapar el nth-child general) */
-.tabla-metricas-excel td.celda-valor,
-.tabla-metricas-excel tr:nth-child(even) td.celda-valor {
-  background-color: #d9e1f2;
-  color: black;
-}
-
-/* Columna de Totales (derecha del todo) */
-.tabla-metricas-excel th.celda-total-cabecera,
-.tabla-metricas-excel td.celda-total-valor,
-.tabla-metricas-excel tr:nth-child(even) td.celda-total-valor {
-  background-color: #ffffff;
-  font-weight: bold;
-  color: black;
+.chart-container h2,
+.chart-container-large h2 {
+  text-align: center;
+  margin-bottom: 20px;
 }

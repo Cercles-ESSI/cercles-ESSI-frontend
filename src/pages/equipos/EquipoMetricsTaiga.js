@@ -5,6 +5,9 @@ import {
   getEquipoDetalle,
   syncTaigaMetrics,
 } from '../../services/Equipos_Api';
+import Sidebar from '../../components/common/Sidebar';
+import './EquipoMetricsTaiga.css';
+import loadingGif from '../../assets/images/15-28-43-29_512.webp';
 import { Bar, Pie } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -15,18 +18,6 @@ import {
   LinearScale,
   BarElement,
 } from 'chart.js';
-import Sidebar from '../../components/common/Sidebar';
-import './EquipoMetricsTaiga.css';
-import loadingGif from '../../assets/images/15-28-43-29_512.webp';
-
-ChartJS.register(
-  ArcElement,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-);
 
 const EquipoMetricsTaiga = () => {
   const { id } = useParams();
@@ -265,6 +256,171 @@ const EquipoMetricsTaiga = () => {
                       </tr>
                     </tbody>
                   </table>
+                </div>
+                <div className="taiga-charts" style={{ marginTop: '3rem' }}>
+                  <h3>GRÀFICS</h3>
+                  <div className="charts-section">
+                    {/* Primera fila de gráficos (Los dos quesos) */}
+                    <div className="chart-row">
+                      <div className="chart-container">
+                        <h2>Repartiment de Tasques (%)</h2>
+                        <div
+                          style={{
+                            position: 'relative',
+                            height: '350px',
+                            width: '100%',
+                          }}
+                        >
+                          <Pie
+                            data={{
+                              labels:
+                                datosMetricas.estadisticasTareas.metricasEstudiantes.map(
+                                  (m) => m.nombreEstudiante,
+                                ),
+                              datasets: [
+                                {
+                                  data: datosMetricas.estadisticasTareas.metricasEstudiantes.map(
+                                    (m) => m.porcentajeTareas,
+                                  ),
+                                  backgroundColor: [
+                                    '#6C9975',
+                                    '#BB6365',
+                                    '#785B75',
+                                    '#5E807F',
+                                    '#BA5A31',
+                                    '#355C7D',
+                                    '#F4A261',
+                                    '#E76F51',
+                                    '#2A9D8F',
+                                    '#264653',
+                                    '#A8DADC',
+                                    '#457B9D',
+                                  ],
+                                },
+                              ],
+                            }}
+                            options={{
+                              responsive: true,
+                              maintainAspectRatio: false,
+                              plugins: {
+                                legend: { labels: { font: { size: 14 } } },
+                                tooltip: {
+                                  callbacks: {
+                                    label: (context) =>
+                                      ` ${context.raw.toFixed(1)}%`,
+                                  },
+                                },
+                              },
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="chart-container">
+                        <h2>Participació en Històries (%)</h2>
+                        <div
+                          style={{
+                            position: 'relative',
+                            height: '350px',
+                            width: '100%',
+                          }}
+                        >
+                          <Pie
+                            data={{
+                              labels:
+                                datosMetricas.estadisticasHistorias.metricasEstudiantes.map(
+                                  (m) => m.nombreEstudiante,
+                                ),
+                              datasets: [
+                                {
+                                  data: datosMetricas.estadisticasHistorias.metricasEstudiantes.map(
+                                    (m) => m.porcentajeHistorias,
+                                  ),
+                                  backgroundColor: [
+                                    '#6C9975',
+                                    '#BB6365',
+                                    '#785B75',
+                                    '#5E807F',
+                                    '#BA5A31',
+                                    '#355C7D',
+                                    '#F4A261',
+                                    '#E76F51',
+                                    '#2A9D8F',
+                                    '#264653',
+                                    '#A8DADC',
+                                    '#457B9D',
+                                  ],
+                                },
+                              ],
+                            }}
+                            options={{
+                              responsive: true,
+                              maintainAspectRatio: false,
+                              plugins: {
+                                legend: { labels: { font: { size: 14 } } },
+                                tooltip: {
+                                  callbacks: {
+                                    label: (context) =>
+                                      ` ${context.raw.toFixed(1)}%`,
+                                  },
+                                },
+                              },
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Segunda fila de gráficos (Barras) */}
+                    <div className="chart-row">
+                      <div className="chart-container-large">
+                        <h2>Històries d&apos;usuari i tasques</h2>
+                        <div
+                          style={{
+                            position: 'relative',
+                            height: '400px',
+                            width: '100%',
+                          }}
+                        >
+                          <Bar
+                            data={{
+                              labels:
+                                datosMetricas.estadisticasHistorias.metricasEstudiantes.map(
+                                  (m) => m.nombreEstudiante,
+                                ),
+                              datasets: [
+                                {
+                                  label: 'HU Tancades',
+                                  data: datosMetricas.estadisticasHistorias.metricasEstudiantes.map(
+                                    (m) => m.totalHistoriasCerradas || 0,
+                                  ),
+                                  backgroundColor: '#A7D2CB',
+                                },
+                                {
+                                  label: 'Total Tasques',
+                                  data: datosMetricas.estadisticasTareas.metricasEstudiantes.map(
+                                    (m) => m.totalTareas,
+                                  ),
+                                  backgroundColor: '#F2D388',
+                                },
+                              ],
+                            }}
+                            options={{
+                              responsive: true,
+                              maintainAspectRatio: false,
+                              plugins: {
+                                legend: { labels: { font: { size: 16 } } },
+                              },
+                              scales: {
+                                x: { ticks: { font: { size: 14 } } },
+                                y: { ticks: { font: { size: 14 } } },
+                              },
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </>
             )
