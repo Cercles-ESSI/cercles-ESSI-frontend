@@ -13,6 +13,7 @@ const CrearCurso = () => {
   const [añoInicio, setAñoInicio] = useState(currentYear);
   const [cuatrimestre, setCuatrimestre] = useState('1');
   const [selectedProfesores, setSelectedProfesores] = useState([]);
+  const [gestiotasques, setGestioTasques] = useState('');
   const [profesoresDisponibles, setProfesoresDisponibles] = useState([]);
   const [estudiantesFile, setEstudiantesFile] = useState(null);
   const [estudiantesData, setEstudiantesData] = useState([]);
@@ -168,6 +169,7 @@ const CrearCurso = () => {
             return { id: prof.id, nombre: prof.nombre, correo: prof.correo };
           }),
           estudiantes: data,
+          gestiotasques,
           periodosEvaluacion,
           githubAsignatura,
           tokenGithub,
@@ -318,6 +320,35 @@ const CrearCurso = () => {
               value={tokenGithub}
               onChange={(e) => setTokenGithub(e.target.value)}
             />
+          </div>
+
+          <div className="form-group-curso">
+            <label className="main-label">
+              La gestió de tasques del curs es gestiona amb:
+            </label>
+            <div className="radio-group">
+              <label className="radio-label">
+                <input
+                  type="radio"
+                  name="tasques"
+                  value="GitHub"
+                  checked={gestiotasques === 'GitHub'}
+                  onChange={(e) => setGestioTasques(e.target.value)}
+                />
+                GitHub
+              </label>
+
+              <label className="radio-label">
+                <input
+                  type="radio"
+                  name="tasques"
+                  value="Taiga"
+                  checked={gestiotasques === 'Taiga'}
+                  onChange={(e) => setGestioTasques(e.target.value)}
+                />
+                Taiga
+              </label>
+            </div>
           </div>
 
           <div className="form-group-curso">

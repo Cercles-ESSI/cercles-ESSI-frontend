@@ -458,7 +458,7 @@ const EquipoPage = () => {
                       </span>
                     </div>
                     <div className="metrics-link-disabled">
-                      📊 Veure detalls de les mètriques de GitHub
+                      📊 Veure detalls de les mètriques de codi
                       <span className="disabled-message">
                         Aquest equip encara no ha configurat la seva
                         organització de Github, per tant no hi ha dades a veure.
@@ -467,24 +467,43 @@ const EquipoPage = () => {
                   </>
                 )}
 
-                {/* Link a Taiga */}
-                {equipo.taigaProyecto ? (
-                  <Link
-                    to={`/equipo/${id}/taiga-metrics?project=${equipo.taigaProyecto}`}
-                    className="metrics-link"
-                  >
-                    📊 Veure mètriques de Taiga
-                  </Link>
-                ) : (
-                  <div className="metrics-link-disabled">
-                    📊 Veure mètriques de Taiga
-                    <span className="disabled-message">
-                      Aquest equip encara no ha configurat el seu projecte de
-                      Taiga, per tant no hi ha dades a veure.
-                    </span>
-                  </div>
-                )}
+                {/* Bloque para GITHUB */}
+                {equipo.gestionTareas === 'GitHub' &&
+                  (equipo.gitOrganizacion ? (
+                    <Link
+                      to={`/equipo/${id}/github-metrics?org=${equipo.gitOrganizacion}&estudiantesIds=${estIds.join(',')}`}
+                      className="metrics-link"
+                    >
+                      📊 Veure mètriques de gestió de tasques (GitHub)
+                    </Link>
+                  ) : (
+                    <div className="metrics-link-disabled">
+                      📊 Veure mètriques de gestió de tasques (GitHub)
+                      <span className="disabled-message">
+                        Aquest equip encara no ha configurat la seva
+                        organització de GitHub, per tant no hi ha dades a veure.
+                      </span>
+                    </div>
+                  ))}
 
+                {/* Bloque para TAIGA */}
+                {equipo.gestionTareas === 'Taiga' &&
+                  (equipo.taigaProyecto ? (
+                    <Link
+                      to={`/equipo/${id}/taiga-metrics?project=${equipo.taigaProyecto}`}
+                      className="metrics-link"
+                    >
+                      📊 Veure mètriques de gestió de tasques (Taiga)
+                    </Link>
+                  ) : (
+                    <div className="metrics-link-disabled">
+                      📊 Veure mètriques de gestió de tasques (Taiga)
+                      <span className="disabled-message">
+                        Aquest equip encara no ha configurat el seu projecte de
+                        Taiga, per tant no hi ha dades a veure.
+                      </span>
+                    </div>
+                  ))}
                 {/* Link a dades d'avaluacions */}
                 <Link
                   to={`/equipo/${id}/evaluaciones_generales`}
@@ -703,34 +722,11 @@ const EquipoPage = () => {
             </>
           )}
         </div>
-        {/* Organización Taiga */}
-        <div className="equipo-section">
-          <h2>Projecte de Taiga</h2>
-          {isProfesor ? (
-            equipo.taigaProyecto ? (
-              <>
-                <p>
-                  ✅ El projecte de Taiga està configurat:
-                  <a
-                    href={`https://taiga.com/${equipo.taigaProyecto}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="github-org-link"
-                  >
-                    {equipo.taigaProyecto}
-                  </a>
-                </p>
-              </>
-            ) : (
-              <p>
-                Els estudiants encara no han definit el seu projecte de Taiga.
-              </p>
-            )
-          ) : (
-            // Vista para estudiantes
-            <>
-              {equipo.taigaProyecto ? (
-                // organización ya está configurada
+        {equipo.gestionTareas === 'Taiga' && (
+          <div className="equipo-section">
+            <h2>Projecte de Taiga</h2>
+            {isProfesor ? (
+              equipo.taigaProyecto ? (
                 <>
                   <p>
                     ✅ El projecte de Taiga està configurat:
@@ -742,119 +738,145 @@ const EquipoPage = () => {
                     >
                       {equipo.taigaProyecto}
                     </a>
-                    <button
-                      className="disconnect-button"
-                      onClick={() => setShowDisconnectPopupTaiga(true)}
-                    >
-                      Desconnectar projecte
-                    </button>
                   </p>
                 </>
               ) : (
-                // Si la organización aún no está configurada
-                <>
-                  {!comprobandoValidacionT ? (
-                    <>
-                      {error && (
-                        <div className="error-message-inline">{error}</div>
-                      )}
-                      <p>
-                        Introdueix la URL del projecte de Taiga del teu equip.
-                        Assegura&apos;t de que el perfil del professor
-                        <strong> {equipo.taigaUserProf}</strong> n&apos;és
-                        membre i que el projecte es <strong>públic</strong>.
-                      </p>
-                      <input
-                        type="text"
-                        placeholder="https://taiga.com/project/nom-projecte"
-                        value={TaigaUrl}
-                        onChange={(e) => setTaigaUrl(e.target.value)}
-                        className="git-org-input-field"
-                      />
-                      <button
-                        onClick={handleValidateTaiga}
-                        className="validate-git-org-button"
-                        disabled={!TaigaUrl}
+                <p>
+                  Els estudiants encara no han definit el seu projecte de Taiga.
+                </p>
+              )
+            ) : (
+              // Vista para estudiantes
+              <>
+                {equipo.taigaProyecto ? (
+                  // organización ya está configurada
+                  <>
+                    <p>
+                      ✅ El projecte de Taiga està configurat:
+                      <a
+                        href={`https://taiga.com/${equipo.taigaProyecto}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="github-org-link"
                       >
-                        Validar
+                        {equipo.taigaProyecto}
+                      </a>
+                      <button
+                        className="disconnect-button"
+                        onClick={() => setShowDisconnectPopupTaiga(true)}
+                      >
+                        Desconnectar projecte
                       </button>
-                    </>
-                  ) : (
-                    <div className="validation-results">
-                      <p>
-                        {validationResultsT?.professoratEsMiembroT ? (
-                          <>
-                            ✅ L&apos;usuari{' '}
-                            <strong>{equipo.taigaUserProf} </strong>
-                            és membre del projecte.
-                          </>
+                    </p>
+                  </>
+                ) : (
+                  // Si la organización aún no está configurada
+                  <>
+                    {!comprobandoValidacionT ? (
+                      <>
+                        {error && (
+                          <div className="error-message-inline">{error}</div>
+                        )}
+                        <p>
+                          Introdueix la URL del projecte de Taiga del teu equip.
+                          Assegura&apos;t de que el perfil del professor
+                          <strong> {equipo.taigaUserProf}</strong> n&apos;és
+                          membre i que el projecte es <strong>públic</strong>.
+                        </p>
+                        <input
+                          type="text"
+                          placeholder="https://taiga.com/project/nom-projecte"
+                          value={TaigaUrl}
+                          onChange={(e) => setTaigaUrl(e.target.value)}
+                          className="git-org-input-field"
+                        />
+                        <button
+                          onClick={handleValidateTaiga}
+                          className="validate-git-org-button"
+                          disabled={!TaigaUrl}
+                        >
+                          Validar
+                        </button>
+                      </>
+                    ) : (
+                      <div className="validation-results">
+                        <p>
+                          {validationResultsT?.professoratEsMiembroT ? (
+                            <>
+                              ✅ L&apos;usuari{' '}
+                              <strong>{equipo.taigaUserProf} </strong>
+                              és membre del projecte.
+                            </>
+                          ) : (
+                            <>
+                              ❌ L&apos;usuari{' '}
+                              <strong>{equipo.taigaUserProf} </strong>
+                              no és membre del projecte.
+                            </>
+                          )}
+                        </p>
+
+                        <p>
+                          {validationResultsT?.todosUsuariosTaigaConfigurados
+                            ? '✅ Tots els membres tenen un compte de Taiga associat.'
+                            : '❌ No tots els membres tenen un compte de Taiga associat.'}
+                        </p>
+                        <p>
+                          {validationResultsT?.todosMiembrosEnProyecto
+                            ? '✅ Tots els membres pertanyen al projecte de Taiga.'
+                            : '❌ No tots els membres pertanyen al projecte de Taiga.'}
+                        </p>
+                        <p>
+                          {validationResultsT?.proyectoPublico
+                            ? '✅ El projecte és públic.'
+                            : '❌ El projecte és privat.'}
+                        </p>
+                        {validationResultsT?.professoratEsMiembroT &&
+                        validationResultsT?.todosUsuariosTaigaConfigurados &&
+                        validationResultsT?.todosMiembrosEnProyecto &&
+                        validationResultsT?.proyectoPublico ? (
+                          <button
+                            onClick={async () => {
+                              try {
+                                await handleConfirmTaiga();
+                                alert('Confirmat!');
+                              } catch (error) {
+                                setError('Error.');
+                              }
+                            }}
+                            className="confirm-git-org-button"
+                          >
+                            Confirmar organització
+                          </button>
                         ) : (
                           <>
-                            ❌ L&apos;usuari{' '}
-                            <strong>{equipo.taigaUserProf} </strong>
-                            no és membre del projecte.
+                            {error && (
+                              <div className="error-message-inline">
+                                {error}
+                              </div>
+                            )}
+                            <button
+                              onClick={handleValidateTaiga}
+                              className="validate-git-org-button"
+                            >
+                              Torna a validar
+                            </button>
+                            <button
+                              className="error-message-button"
+                              onClick={() => setComprobandoValidacionT(false)}
+                            >
+                              Torna enrere
+                            </button>
                           </>
                         )}
-                      </p>
-
-                      <p>
-                        {validationResultsT?.todosUsuariosTaigaConfigurados
-                          ? '✅ Tots els membres tenen un compte de Taiga associat.'
-                          : '❌ No tots els membres tenen un compte de Taiga associat.'}
-                      </p>
-                      <p>
-                        {validationResultsT?.todosMiembrosEnProyecto
-                          ? '✅ Tots els membres pertanyen al projecte de Taiga.'
-                          : '❌ No tots els membres pertanyen al projecte de Taiga.'}
-                      </p>
-                      <p>
-                        {validationResultsT?.proyectoPublico
-                          ? '✅ El projecte és públic.'
-                          : '❌ El projecte és privat.'}
-                      </p>
-                      {validationResultsT?.professoratEsMiembroT &&
-                      validationResultsT?.todosUsuariosTaigaConfigurados &&
-                      validationResultsT?.todosMiembrosEnProyecto &&
-                      validationResultsT?.proyectoPublico ? (
-                        <button
-                          onClick={async () => {
-                            try {
-                              await handleConfirmTaiga();
-                              alert('Confirmat!');
-                            } catch (error) {
-                              setError('Error.');
-                            }
-                          }}
-                          className="confirm-git-org-button"
-                        >
-                          Confirmar organització
-                        </button>
-                      ) : (
-                        <>
-                          {error && (
-                            <div className="error-message-inline">{error}</div>
-                          )}
-                          <button
-                            onClick={handleValidateTaiga}
-                            className="validate-git-org-button"
-                          >
-                            Torna a validar
-                          </button>
-                          <button
-                            className="error-message-button"
-                            onClick={() => setComprobandoValidacionT(false)}
-                          >
-                            Torna enrere
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  )}
-                </>
-              )}
-            </>
-          )}
-        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </>
+            )}
+          </div>
+        )}
 
         <div className="equipo-section">
           <h2>Membres de l&apos;equip</h2>

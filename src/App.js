@@ -13,6 +13,7 @@ import EquipoPage from './pages/equipos/EquipoPage';
 import CrearEquipo from './pages/equipos/CrearEquipo';
 import EquipoMetricsPage from './pages/equipos/EquipoMetricsPage';
 import EquipoMetricsTaiga from './pages/equipos/EquipoMetricsTaiga';
+import EquipoMetricsGitHub from './pages/equipos/EquipoMetricsGitHub';
 import DatosGeneralesEquipoPage from './pages/equipos/DatosGeneralesEquipoPage';
 import EvaluacionPage from './pages/evaluaciones/EvaluacionPage';
 import EvaluacionesGeneralesPage from './pages/evaluaciones/EvaluacionesGeneralesPage';
@@ -109,6 +110,14 @@ function App() {
           element={
             <PrivateRoute requiredRole="Profesor">
               <EquipoMetricsTaiga />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/equipo/:id/github-metrics"
+          element={
+            <PrivateRoute requiredRole="Profesor">
+              <EquipoMetricsGitHub />
             </PrivateRoute>
           }
         />

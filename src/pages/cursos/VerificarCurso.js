@@ -11,8 +11,14 @@ import {
 const VerificarCurso = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
-  const { nombreAsignatura, añoInicio, cuatrimestre, profesores, estudiantes } =
-    state;
+  const {
+    nombreAsignatura,
+    añoInicio,
+    cuatrimestre,
+    profesores,
+    estudiantes,
+    gestiotasques,
+  } = state;
 
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -89,6 +95,7 @@ const VerificarCurso = () => {
       periodosEvaluacion: state.periodosEvaluacion,
       githubAsignatura: state.githubAsignatura,
       tokenGithubAsignatura: state.tokenGithub,
+      gestionTareas: state.gestiotasques,
     };
 
     crearCurso(newCursoData)
@@ -162,6 +169,10 @@ const VerificarCurso = () => {
                 <span className="cross-icon">❌</span> No establert
               </span>
             )}
+          </p>
+          <p>
+            <strong>Les tasques del curs es gestionen amb: </strong>{' '}
+            {state.gestiotasques}
           </p>
         </div>
         <h2>Períodes d&apos;avaluació</h2>
@@ -253,6 +264,7 @@ const VerificarCurso = () => {
                   añoInicio,
                   cuatrimestre,
                   selectedProfesores: profesores.map((prof) => prof.id),
+                  gestiotasques,
                 },
               })
             }

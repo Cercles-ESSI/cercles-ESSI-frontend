@@ -142,7 +142,7 @@ const EquipoMetricsTaiga = () => {
         </button>
 
         <h1>
-          Mètriques de Taiga de l&apos;equip {equipo.nombre} pel curs{' '}
+          Rendiment a Taiga - Equip {equipo.nombre} pel curs{' '}
           {equipo.nombreAsignatura}
         </h1>
 

@@ -196,6 +196,7 @@ const CursoPage = () => {
       cuatrimestre: editedCurso.cuatrimestre,
       githubAsignatura: editedCurso.githubAsignatura,
       tokenGithubAsignatura: editedCurso.tokenGithub,
+      gestionTareas: editedCurso.gestionTareas,
       estudiantesAñadir: newEstudiante.nombre
         ? [
             {
@@ -450,6 +451,46 @@ const CursoPage = () => {
                       <span className="token-status">
                         <span className="cross-icon">❌</span> No establert
                       </span>
+                    )}
+                  </p>
+                  <p>
+                    <strong>Les tasques del curs es gestionen amb:</strong>{' '}
+                    {isEditing ? (
+                      <div className="radio-group">
+                        <label className="radio-label">
+                          <input
+                            type="radio"
+                            name="tasques"
+                            value="GitHub"
+                            checked={editedCurso.gestionTareas === 'GitHub'}
+                            onChange={(e) =>
+                              setEditedCurso({
+                                ...editedCurso,
+                                gestionTareas: e.target.value,
+                              })
+                            }
+                          />
+                          GitHub
+                        </label>
+
+                        <label className="radio-label">
+                          <input
+                            type="radio"
+                            name="tasques"
+                            value="Taiga"
+                            checked={editedCurso.gestionTareas === 'Taiga'}
+                            onChange={(e) =>
+                              setEditedCurso({
+                                ...editedCurso,
+                                gestionTareas: e.target.value,
+                              })
+                            }
+                          />
+                          Taiga
+                        </label>
+                      </div>
+                    ) : (
+                      curso.gestionTareas
                     )}
                   </p>
                   <p>

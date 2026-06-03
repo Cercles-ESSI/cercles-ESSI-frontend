@@ -24,7 +24,7 @@ ChartJS.register(
   BarElement,
 );
 
-const EquipoMetricsPage = () => {
+const EquipoMetricsGitHub = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -141,13 +141,13 @@ const EquipoMetricsPage = () => {
           Torna enrere
         </button>
         <h1>
-          Mètriques de GitHub de l&apos;equip {equipo.nombre} pel curs{' '}
+          Rendiment a GitHub - Equip {equipo.nombre} pel curs{' '}
           {equipo.nombreAsignatura}
         </h1>
         <h1>Nom de l&apos;organització {org}</h1>
 
         {/* Primera Tabla */}
-        <h3>Mètriques de les contribucions dels usuaris</h3>
+        <h3>Mètriques d&apos;històries d&apos;usuari i tasques</h3>
         <table>
           <thead>
             <tr>
@@ -160,61 +160,50 @@ const EquipoMetricsPage = () => {
           </thead>
           <tbody>
             <tr>
-              <td>#Commits</td>
+              <td>Històries d&apos;usuari</td>
               {metrics.map((m) => (
-                <td key={`commits-${m.username}`}>{m.totalCommits}</td>
+                <td key={`userStories-${m.username}`}>{m.userStories}</td>
               ))}
               <td className="mitjana-column">
                 {(
-                  metrics.reduce((sum, m) => sum + m.totalCommits, 0) /
+                  metrics.reduce((sum, m) => sum + m.userStories, 0) /
                   metrics.length
                 ).toFixed(2)}
               </td>
             </tr>
             <tr>
-              <td>#Línies ++</td>
+              <td>Històries d&apos;usuari tancades</td>
               {metrics.map((m) => (
-                <td key={`linesAdded-${m.username}`}>{m.linesAdded}</td>
+                <td key={`userStoriesClosed-${m.username}`}>
+                  {m.userStoriesClosed}
+                </td>
               ))}
               <td className="mitjana-column">
                 {(
-                  metrics.reduce((sum, m) => sum + m.linesAdded, 0) /
+                  metrics.reduce((sum, m) => sum + m.userStoriesClosed, 0) /
                   metrics.length
                 ).toFixed(2)}
               </td>
             </tr>
             <tr>
-              <td>#Línies --</td>
+              <td>Tasques</td>
               {metrics.map((m) => (
-                <td key={`linesRemoved-${m.username}`}>{m.linesRemoved}</td>
+                <td key={`tasks-${m.username}`}>{m.tasks}</td>
               ))}
               <td className="mitjana-column">
                 {(
-                  metrics.reduce((sum, m) => sum + m.linesRemoved, 0) /
-                  metrics.length
+                  metrics.reduce((sum, m) => sum + m.tasks, 0) / metrics.length
                 ).toFixed(2)}
               </td>
             </tr>
             <tr>
-              <td>#PRs creats</td>
+              <td>Tasques tancades</td>
               {metrics.map((m) => (
-                <td key={`prs-${m.username}`}>{m.pullRequestsCreated}</td>
+                <td key={`tasksClosed-${m.username}`}>{m.tasksClosed}</td>
               ))}
               <td className="mitjana-column">
                 {(
-                  metrics.reduce((sum, m) => sum + m.pullRequestsCreated, 0) /
-                  metrics.length
-                ).toFixed(2)}
-              </td>
-            </tr>
-            <tr>
-              <td>#PRs fusionats</td>
-              {metrics.map((m) => (
-                <td key={`prs-${m.username}`}>{m.pullRequestsMerged}</td>
-              ))}
-              <td className="mitjana-column">
-                {(
-                  metrics.reduce((sum, m) => sum + m.pullRequestsMerged, 0) /
+                  metrics.reduce((sum, m) => sum + m.tasksClosed, 0) /
                   metrics.length
                 ).toFixed(2)}
               </td>
@@ -222,69 +211,123 @@ const EquipoMetricsPage = () => {
           </tbody>
         </table>
 
+        {/* Sección Expandible */}
+        <div>
+          <h2
+            onClick={() => setIsExpanded((prevState) => !prevState)}
+            className="expandable-header"
+          >
+            Veure detalls de les històries d&apos;usuari i les tasques{' '}
+            {isExpanded ? '▲' : '▼'}
+          </h2>
+
+          {isExpanded && (
+            <>
+              {/* Tabla de historias de usuario */}
+              <h3>Històries d&apos;usuari</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Detalls</th>
+                    {metrics.map((m) => (
+                      <th key={m.username}>{m.nombre}</th>
+                    ))}
+                    <th>No assignat</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {globalIssueDetails
+                    .filter(
+                      (detail) =>
+                        detail.includes('user story') ||
+                        detail.includes('historia de usuario') ||
+                        detail.includes("història d'usuari"),
+                    )
+                    .map((detail, index) => {
+                      const shortDetail = detail.split(',')[0];
+                      const noAssignat = detail.includes('Assignees: []');
+
+                      return (
+                        <tr key={`user-story-${index}`}>
+                          <td>{shortDetail}</td>
+                          {metrics.map((m) => (
+                            <td key={`user-story-detail-${m.username}`}>
+                              {detail.includes(`Assignees: [${m.username}]`)
+                                ? '✔️'
+                                : ''}
+                            </td>
+                          ))}
+                          <td>{noAssignat ? '✔️' : ''}</td>
+                        </tr>
+                      );
+                    })}
+                </tbody>
+              </table>
+
+              {/* Tabla de tareas */}
+              <h3>Tasques</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Detalls</th>
+                    {metrics.map((m) => (
+                      <th key={m.username}>{m.nombre}</th>
+                    ))}
+                    <th>No assignat</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {globalIssueDetails
+                    .filter(
+                      (detail) =>
+                        detail.includes('task') ||
+                        detail.includes('tarea') ||
+                        detail.includes('tasca'),
+                    )
+                    .map((detail, index) => {
+                      const shortDetail = detail.split(',')[0];
+                      const noAssignat = detail.includes('Assignees: []');
+
+                      return (
+                        <tr key={`task-${index}`}>
+                          <td>{shortDetail}</td>
+                          {metrics.map((m) => (
+                            <td key={`task-detail-${m.username}`}>
+                              {detail.includes(`Assignees: [${m.username}]`)
+                                ? '✔️'
+                                : ''}
+                            </td>
+                          ))}
+                          <td>{noAssignat ? '✔️' : ''}</td>
+                        </tr>
+                      );
+                    })}
+                </tbody>
+              </table>
+            </>
+          )}
+        </div>
+
         {/* Gráficos */}
         <h3>GRÀFICS</h3>
         <div className="charts-section">
-          {/* Primera fila de gráficos */}
+          {/* Segunda fila de gráficos */}
           <div className="chart-row">
-            <div className="chart-container">
-              <h2>Distribució de commits</h2>
-              <Pie
-                data={{
-                  labels: metrics.map((m) => m.nombre),
-                  datasets: [
-                    {
-                      data: metrics.map((m) => m.totalCommits),
-                      backgroundColor: [
-                        '#6C9975',
-                        '#BB6365',
-                        '#785B75',
-                        '#5E807F',
-                        '#BA5A31',
-                        '#355C7D',
-                        '#F4A261',
-                        '#E76F51',
-                        '#2A9D8F',
-                        '#264653',
-                        '#A8DADC',
-                        '#457B9D',
-                        '#E9C46A',
-                        '#F4A3B3',
-                        '#D4A5A5',
-                        '#B5838D',
-                      ],
-                    },
-                  ],
-                }}
-                options={{
-                  responsive: true,
-                  plugins: {
-                    legend: {
-                      labels: {
-                        font: {
-                          size: 16,
-                        },
-                      },
-                    },
-                  },
-                }}
-              />
-            </div>
-            <div className="chart-container">
-              <h2>Línies afegides i eliminades</h2>
+            <div className="chart-container-large">
+              <h2>Històries d&apos;usuari i tasques tancades</h2>
               <Bar
                 data={{
                   labels: metrics.map((m) => m.nombre),
                   datasets: [
                     {
-                      label: 'Línies afegides',
-                      data: metrics.map((m) => m.linesAdded),
-                      backgroundColor: '#6C9975',
+                      label: 'HU tancades',
+                      data: metrics.map((m) => m.userStoriesClosed),
+                      backgroundColor: '#A7D2CB',
                     },
                     {
-                      label: 'Línies eliminades',
-                      data: metrics.map((m) => m.linesRemoved),
-                      backgroundColor: '#BB6365',
+                      label: 'Tasques tancades',
+                      data: metrics.map((m) => m.tasksClosed),
+                      backgroundColor: '#F2D388',
                     },
                   ],
                 }}
@@ -306,6 +349,55 @@ const EquipoMetricsPage = () => {
                 }}
               />
             </div>
+            <div className="chart-container">
+              <h2>Distribució d&apos;històries d&apos;usuari totals</h2>
+              <Pie
+                data={{
+                  labels: metrics.every((m) => m.userStories === 0)
+                    ? ['No hi ha cap HU']
+                    : metrics.map((m) => m.nombre),
+                  datasets: [
+                    {
+                      data: metrics.every((m) => m.userStories === 0)
+                        ? [1] // Valor fijo para el caso de "No hi ha cap HU"
+                        : metrics.map((m) => m.userStories),
+                      backgroundColor: metrics.every((m) => m.userStories === 0)
+                        ? ['#C0C0C0'] // Color gris para "No hi ha cap HU"
+                        : [
+                            '#6C9975',
+                            '#BB6365',
+                            '#785B75',
+                            '#5E807F',
+                            '#BA5A31',
+                            '#355C7D',
+                            '#F4A261',
+                            '#E76F51',
+                            '#2A9D8F',
+                            '#264653',
+                            '#A8DADC',
+                            '#457B9D',
+                            '#E9C46A',
+                            '#F4A3B3',
+                            '#D4A5A5',
+                            '#B5838D',
+                          ],
+                    },
+                  ],
+                }}
+                options={{
+                  responsive: true,
+                  plugins: {
+                    legend: {
+                      labels: {
+                        font: {
+                          size: 16,
+                        },
+                      },
+                    },
+                  },
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -313,4 +405,4 @@ const EquipoMetricsPage = () => {
   );
 };
 
-export default EquipoMetricsPage;
+export default EquipoMetricsGitHub;
