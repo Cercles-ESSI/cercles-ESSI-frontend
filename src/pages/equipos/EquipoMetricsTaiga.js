@@ -257,6 +257,88 @@ const EquipoMetricsTaiga = () => {
                     </tbody>
                   </table>
                 </div>
+
+                {/* TABLA 3: DETALLES TAIGA */}
+                <div className="table-responsive" style={{ marginTop: '3rem' }}>
+                  <h3
+                    onClick={() => setIsExpanded((prevState) => !prevState)}
+                    className="expandable-header"
+                  >
+                    Veure detalls de les històries d&apos;usuari i les tasques{' '}
+                    {isExpanded ? '▲' : '▼'}
+                  </h3>
+
+                  {isExpanded && (
+                    <>
+                      <h3> Detalls a Taiga</h3>
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>ID</th>
+                            <th>Nom HU</th>
+                            <th>Estat</th>
+                            <th>SP</th>
+                            <th>Sprint</th>
+                            {/* Generamos las columnas de estudiantes en el mismo orden */}
+                            {datosMetricas.estadisticasTareas.metricasEstudiantes.map(
+                              (estudiante, index) => (
+                                <th key={index}>
+                                  {estudiante.nombreEstudiante}
+                                </th>
+                              ),
+                            )}
+                            <th>Sense assignar</th>
+                            <th className="mitjana-column">Total tasques</th>
+                            <th className="mitjana-column">Total membres</th>
+                          </tr>
+                        </thead>
+
+                        <tbody>
+                          {/* Recorremos cada historia que nos manda el backend */}
+                          {datosMetricas.detallesTaiga &&
+                            datosMetricas.detallesTaiga.map(
+                              (historia, rowIndex) => (
+                                <tr key={rowIndex}>
+                                  <td>{historia.id}</td>
+                                  <td>{historia.titulo}</td>
+                                  <td>{historia.estado}</td>
+                                  <td>{historia.puntosEsfuerzo}</td>
+                                  <td>{historia.sprint || 'Backlog'}</td>
+
+                                  {/* Buscamos cuántas tareas tiene cada estudiante en esta historia en concreto */}
+                                  {datosMetricas.estadisticasTareas.metricasEstudiantes.map(
+                                    (estudiante, colIndex) => {
+                                      // Buscamos en el diccionario (Map) del backend usando el nombre del estudiante.
+                                      // Si no existe o es undefined, ponemos un 0.
+                                      const tareasDelEstudiante =
+                                        historia.tareasPorEstudiante[
+                                          estudiante.nombreEstudiante
+                                        ] || 0;
+
+                                      return (
+                                        <td key={colIndex}>
+                                          {tareasDelEstudiante}
+                                        </td>
+                                      );
+                                    },
+                                  )}
+
+                                  <td>{historia.tareasSinAsignar}</td>
+                                  <td className="mitjana-column">
+                                    {historia.totalTareas}
+                                  </td>
+                                  <td className="mitjana-column">
+                                    {historia.totalMiembros}
+                                  </td>
+                                </tr>
+                              ),
+                            )}
+                        </tbody>
+                      </table>
+                    </>
+                  )}
+                </div>
+
                 <div className="taiga-charts" style={{ marginTop: '3rem' }}>
                   <h3>GRÀFICS</h3>
                   <div className="charts-section">

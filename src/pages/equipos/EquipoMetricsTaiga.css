@@ -1,3 +1,12 @@
+.taiga-section h3,
+.taiga-section h2,
+.taiga-section h1,
+.expandable-header {
+  width: 100%;
+  padding-left: 0;
+  text-align: center !important;
+}
+
 .metrics-page {
   display: flex;
   flex-direction: row;
@@ -8,8 +17,9 @@
   flex: 1;
   margin-left: 260px; /* Espacio acorde a la barra lateral */
   padding: 20px;
-  max-width: 80%; /* Reducir ancho máximo */
+  /*max-width: 80%; /* Reducir ancho máximo */
   box-sizing: border-box;
+  width: calc(100% - 260px);
 }
 
 h1 {
@@ -26,6 +36,7 @@ h1 {
   font-weight: bold;
   color: #007bff; /* Azul destacado */
   margin: 20px 0;
+  padding-left: 0;
   transition:
     color 0.3s ease,
     transform 0.2s ease;
