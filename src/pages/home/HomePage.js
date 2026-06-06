@@ -65,23 +65,15 @@ const HomePage = () => {
                   al teu perfil per configurar el teu compte de Github.
                 </h2>
               )}
-
-              <div className="config-reminders">
-                {userData.gitUsername === null && (
+              {userData.gitUsername === null && (
+                <div className="config-reminders">
                   <p className="reminder-text">
                     ⚠️ Encara no has configurat el teu compte de{' '}
                     <strong>GitHub</strong>. Ves a la pàgina de Perfil per fer
                     la configuració.
                   </p>
-                )}
-                {/*userData.taigaUsername === null && (
-                  <p className="reminder-text">
-                    ⚠️ Encara no has configurat el teu compte de{' '}
-                    <strong>Taiga</strong>. Ves a la pàgina de Perfil per fer la
-                    configuració.
-                  </p>
-                )*/}
-              </div>
+                </div>
+              )}
 
               <div className="button-container">
                 <button

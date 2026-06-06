@@ -140,171 +140,208 @@ const EquipoMetricsPage = () => {
         <button className="back-button" onClick={handleBackClick}>
           Torna enrere
         </button>
+
         <h1>
           Mètriques de GitHub de l&apos;equip {equipo.nombre} pel curs{' '}
           {equipo.nombreAsignatura}
         </h1>
-        <h1>Nom de l&apos;organització {org}</h1>
+        <h2 style={{ marginBottom: '2rem' }}>
+          Nom de l&apos;organització: {org}
+        </h2>
 
-        {/* Primera Tabla */}
-        <h3>Mètriques de les contribucions dels usuaris</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Dades</th>
-              {metrics.map((m) => (
-                <th key={m.username}>{m.nombre}</th>
-              ))}
-              <th className="mitjana-column">Mitjana</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>#Commits</td>
-              {metrics.map((m) => (
-                <td key={`commits-${m.username}`}>{m.totalCommits}</td>
-              ))}
-              <td className="mitjana-column">
-                {(
-                  metrics.reduce((sum, m) => sum + m.totalCommits, 0) /
-                  metrics.length
-                ).toFixed(2)}
-              </td>
-            </tr>
-            <tr>
-              <td>#Línies ++</td>
-              {metrics.map((m) => (
-                <td key={`linesAdded-${m.username}`}>{m.linesAdded}</td>
-              ))}
-              <td className="mitjana-column">
-                {(
-                  metrics.reduce((sum, m) => sum + m.linesAdded, 0) /
-                  metrics.length
-                ).toFixed(2)}
-              </td>
-            </tr>
-            <tr>
-              <td>#Línies --</td>
-              {metrics.map((m) => (
-                <td key={`linesRemoved-${m.username}`}>{m.linesRemoved}</td>
-              ))}
-              <td className="mitjana-column">
-                {(
-                  metrics.reduce((sum, m) => sum + m.linesRemoved, 0) /
-                  metrics.length
-                ).toFixed(2)}
-              </td>
-            </tr>
-            <tr>
-              <td>#PRs creats</td>
-              {metrics.map((m) => (
-                <td key={`prs-${m.username}`}>{m.pullRequestsCreated}</td>
-              ))}
-              <td className="mitjana-column">
-                {(
-                  metrics.reduce((sum, m) => sum + m.pullRequestsCreated, 0) /
-                  metrics.length
-                ).toFixed(2)}
-              </td>
-            </tr>
-            <tr>
-              <td>#PRs fusionats</td>
-              {metrics.map((m) => (
-                <td key={`prs-${m.username}`}>{m.pullRequestsMerged}</td>
-              ))}
-              <td className="mitjana-column">
-                {(
-                  metrics.reduce((sum, m) => sum + m.pullRequestsMerged, 0) /
-                  metrics.length
-                ).toFixed(2)}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        {/* --- INICIO DE LA TARJETA (CARD) PARA LA TABLA --- */}
+        <div className="card">
+          <h2 style={{ color: '#475569', marginBottom: '1.5rem' }}>
+            Mètriques de les contribucions dels usuaris
+          </h2>
+
+          <div className="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Dades</th>
+                  {metrics.map((m) => (
+                    <th key={m.username}>{m.nombre}</th>
+                  ))}
+                  <th className="mitjana-column">Mitjana</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>#Commits</td>
+                  {metrics.map((m) => (
+                    <td key={`commits-${m.username}`}>{m.totalCommits}</td>
+                  ))}
+                  <td className="mitjana-column">
+                    {(
+                      metrics.reduce((sum, m) => sum + m.totalCommits, 0) /
+                      metrics.length
+                    ).toFixed(2)}
+                  </td>
+                </tr>
+                <tr>
+                  <td>#Línies ++</td>
+                  {metrics.map((m) => (
+                    <td key={`linesAdded-${m.username}`}>{m.linesAdded}</td>
+                  ))}
+                  <td className="mitjana-column">
+                    {(
+                      metrics.reduce((sum, m) => sum + m.linesAdded, 0) /
+                      metrics.length
+                    ).toFixed(2)}
+                  </td>
+                </tr>
+                <tr>
+                  <td>#Línies --</td>
+                  {metrics.map((m) => (
+                    <td key={`linesRemoved-${m.username}`}>{m.linesRemoved}</td>
+                  ))}
+                  <td className="mitjana-column">
+                    {(
+                      metrics.reduce((sum, m) => sum + m.linesRemoved, 0) /
+                      metrics.length
+                    ).toFixed(2)}
+                  </td>
+                </tr>
+                <tr>
+                  <td>#PRs creats</td>
+                  {metrics.map((m) => (
+                    <td key={`prs-${m.username}`}>{m.pullRequestsCreated}</td>
+                  ))}
+                  <td className="mitjana-column">
+                    {(
+                      metrics.reduce(
+                        (sum, m) => sum + m.pullRequestsCreated,
+                        0,
+                      ) / metrics.length
+                    ).toFixed(2)}
+                  </td>
+                </tr>
+                <tr>
+                  <td>#PRs fusionats</td>
+                  {metrics.map((m) => (
+                    <td key={`prs-${m.username}`}>{m.pullRequestsMerged}</td>
+                  ))}
+                  <td className="mitjana-column">
+                    {(
+                      metrics.reduce(
+                        (sum, m) => sum + m.pullRequestsMerged,
+                        0,
+                      ) / metrics.length
+                    ).toFixed(2)}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        {/* --- FIN DE LA TARJETA --- */}
 
         {/* Gráficos */}
-        <h3>GRÀFICS</h3>
-        <div className="charts-section">
-          {/* Primera fila de gráficos */}
-          <div className="chart-row">
-            <div className="chart-container">
-              <h2>Distribució de commits</h2>
-              <Pie
-                data={{
-                  labels: metrics.map((m) => m.nombre),
-                  datasets: [
-                    {
-                      data: metrics.map((m) => m.totalCommits),
-                      backgroundColor: [
-                        '#6C9975',
-                        '#BB6365',
-                        '#785B75',
-                        '#5E807F',
-                        '#BA5A31',
-                        '#355C7D',
-                        '#F4A261',
-                        '#E76F51',
-                        '#2A9D8F',
-                        '#264653',
-                        '#A8DADC',
-                        '#457B9D',
-                        '#E9C46A',
-                        '#F4A3B3',
-                        '#D4A5A5',
-                        '#B5838D',
+        <div className="github-charts" style={{ marginTop: '3rem' }}>
+          <h3>GRÀFICS</h3>
+          <div className="charts-section">
+            {/* Primera fila de gráficos */}
+            <div className="chart-row">
+              <div className="chart-container">
+                <h2 style={{ marginBottom: '20px' }}>Distribució de commits</h2>
+                <div
+                  style={{
+                    position: 'relative',
+                    height: '350px',
+                    width: '100%',
+                  }}
+                >
+                  <Pie
+                    data={{
+                      labels: metrics.map((m) => m.nombre),
+                      datasets: [
+                        {
+                          data: metrics.map((m) => m.totalCommits),
+                          backgroundColor: [
+                            '#E27D60', // Terracota anaranjado
+                            '#85CDCA', // Turquesa suave
+                            '#E8A87C', // Melocotón
+                            '#C38D9E', // Rosa malva viejo
+                            '#41B3A3', // Verde agua intenso
+                            '#8D94BA', // Azul lila
+                            '#F3B562', // Mostaza vivo
+                            '#D96459', // Rojo ladrillo
+                            '#76B096', // Verde salvia
+                            '#A37C40', // Bronce / Ocre oscuro
+                            '#F2E394', // Amarillo vainilla
+                            '#B8C4BB', // Gris verdoso muy claro
+                            '#E9C46A', // (Extra por si hay >12 alumnos)
+                            '#F4A3B3',
+                            '#D4A5A5',
+                            '#B5838D',
+                          ],
+                        },
                       ],
-                    },
-                  ],
-                }}
-                options={{
-                  responsive: true,
-                  plugins: {
-                    legend: {
-                      labels: {
-                        font: {
-                          size: 16,
+                    }}
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: {
+                          labels: {
+                            font: {
+                              size: 16,
+                            },
+                          },
                         },
                       },
-                    },
-                  },
-                }}
-              />
-            </div>
-            <div className="chart-container">
-              <h2>Línies afegides i eliminades</h2>
-              <Bar
-                data={{
-                  labels: metrics.map((m) => m.nombre),
-                  datasets: [
-                    {
-                      label: 'Línies afegides',
-                      data: metrics.map((m) => m.linesAdded),
-                      backgroundColor: '#6C9975',
-                    },
-                    {
-                      label: 'Línies eliminades',
-                      data: metrics.map((m) => m.linesRemoved),
-                      backgroundColor: '#BB6365',
-                    },
-                  ],
-                }}
-                options={{
-                  responsive: true,
-                  plugins: {
-                    legend: {
-                      labels: {
-                        font: {
-                          size: 16,
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="chart-container">
+                <h2 style={{ marginBottom: '20px' }}>
+                  Línies afegides i eliminades
+                </h2>
+                <div
+                  style={{
+                    position: 'relative',
+                    height: '350px',
+                    width: '100%',
+                  }}
+                >
+                  <Bar
+                    data={{
+                      labels: metrics.map((m) => m.nombre),
+                      datasets: [
+                        {
+                          label: 'Línies afegides',
+                          data: metrics.map((m) => m.linesAdded),
+                          backgroundColor: '#6C9975',
+                        },
+                        {
+                          label: 'Línies eliminades',
+                          data: metrics.map((m) => m.linesRemoved),
+                          backgroundColor: '#BB6365',
+                        },
+                      ],
+                    }}
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: {
+                          labels: {
+                            font: {
+                              size: 16,
+                            },
+                          },
                         },
                       },
-                    },
-                  },
-                  scales: {
-                    x: { ticks: { font: { size: 14 } } },
-                    y: { ticks: { font: { size: 14 } } },
-                  },
-                }}
-              />
+                      scales: {
+                        x: { ticks: { font: { size: 14 } } },
+                        y: { ticks: { font: { size: 14 } } },
+                      },
+                    }}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>

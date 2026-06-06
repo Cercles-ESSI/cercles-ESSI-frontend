@@ -117,11 +117,14 @@ const PerfilPage = () => {
                       onClick={() => toggleSection('repositoriosPublicos')}
                       aria-expanded={expandedSection === 'repositoriosPublicos'}
                     >
-                      <strong>Repositoris públics: </strong>{' '}
-                      {
-                        githubData.repositorios.filter((repo) => !repo.private)
-                          .length
-                      }
+                      <span>
+                        <strong>Repositoris públics:</strong>{' '}
+                        {
+                          githubData.repositorios.filter(
+                            (repo) => !repo.private,
+                          ).length
+                        }
+                      </span>
                       <span className="arrow" aria-hidden="true">
                         ▶
                       </span>
@@ -132,11 +135,13 @@ const PerfilPage = () => {
                       onClick={() => toggleSection('repositoriosPrivados')}
                       aria-expanded={expandedSection === 'repositoriosPrivados'}
                     >
-                      <strong>Repositoris privats: </strong>{' '}
-                      {
-                        githubData.repositorios.filter((repo) => repo.private)
-                          .length
-                      }
+                      <span>
+                        <strong>Repositoris privats:</strong>{' '}
+                        {
+                          githubData.repositorios.filter((repo) => repo.private)
+                            .length
+                        }
+                      </span>
                       <span className="arrow" aria-hidden="true">
                         ▶
                       </span>
@@ -147,8 +152,10 @@ const PerfilPage = () => {
                       onClick={() => toggleSection('organizaciones')}
                       aria-expanded={expandedSection === 'organizaciones'}
                     >
-                      <strong>Organitzacions: </strong>{' '}
-                      {githubData.organizaciones.length}
+                      <span>
+                        <strong>Organitzacions:</strong>{' '}
+                        {githubData.organizaciones.length}
+                      </span>
                       <span className="arrow" aria-hidden="true">
                         ▶
                       </span>
@@ -164,31 +171,45 @@ const PerfilPage = () => {
                 </button>
               </div>
             ) : (
-              <div>
-                <p>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  height: '100%',
+                }}
+              >
+                <h2 style={{ marginBottom: '15px' }}>Connecta el teu compte</h2>
+                <p
+                  style={{
+                    lineHeight: '1.6',
+                    color: '#4a5568',
+                    textAlign: 'center',
+                    marginBottom: '30px',
+                  }}
+                >
                   Per connectar el teu compte de <strong>GitHub</strong> amb{' '}
                   <strong>CERCLES</strong>, fes clic al botó següent. Aquesta
                   connexió permetrà associar el teu compte de GitHub amb el teu
-                  perfil dins l&apos;aplicació, proporcionant accés a les dades
-                  dels teus repositoris i organitzacions.{' '}
-                  <strong>
+                  perfil dins l&apos;aplicació.
+                  <br />
+                  <br />
+                  <strong style={{ color: '#d97706' }}>
                     Tingues en compte que, si ja tens una sessió activa a
-                    GitHub, CERCLES s&apos;associarà automàticament a aquesta.
-                  </strong>{' '}
-                  Si vols associar CERCLES amb un compte diferent,
-                  assegura&apos;t de tancar la sessió a GitHub abans de
-                  continuar.
+                    GitHub, s&apos;associarà automàticament a aquesta.
+                  </strong>
                 </p>
 
                 <button
                   className="github-connect-button"
                   onClick={handleGitHubConnect}
+                  style={{ marginTop: 'auto' }}
                 >
                   Connecta amb GitHub
                 </button>
               </div>
             )}
           </div>
+
           {/* Caja secundaria: Detalles expandibles */}
           {expandedSection && githubData && (
             <div className="expanded-details-box">
@@ -218,10 +239,11 @@ const PerfilPage = () => {
             </div>
           )}
         </div>
+
         <div className="profile-images-container">
           <img
             src={userProfile}
-            alt="Home Welcome"
+            alt="User Profile"
             className="profile-images1"
           />
           <img src={githubLogo} alt="GitHub Logo" className="profile-images2" />

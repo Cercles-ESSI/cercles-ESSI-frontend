@@ -147,7 +147,7 @@ const EquipoMetricsTaiga = () => {
         </h1>
 
         <div className="taiga-section">
-          <h3>Resum de contribucions individuals a Taiga </h3>
+          <h3>Resum de contribucions individuals a Taiga</h3>
 
           {loadingTaigaLocal ? (
             <p className="loading-text">🔄 Carregant dades des de Taiga...</p>
@@ -155,122 +155,143 @@ const EquipoMetricsTaiga = () => {
             datosMetricas &&
             datosMetricas.estadisticasTareas && (
               <>
-                {/* TABLA 1: VALORES ABSOLUTOS */}
-                <div className="table-responsive">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Dades</th>
-                        {datosMetricas.estadisticasTareas.metricasEstudiantes.map(
-                          (estudiante, index) => (
-                            <th key={index}>{estudiante.nombreEstudiante}</th>
-                          ),
-                        )}
-                        <th className="mitjana-column">Total</th>
-                      </tr>
-                    </thead>
+                {/* --- INICIO DEL EFECTO TARJETA (CARD) PARA LAS TABLAS --- */}
+                <div className="card">
+                  {/* TABLA 1: VALORES ABSOLUTOS */}
+                  <div className="table-responsive">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Dades</th>
+                          {datosMetricas.estadisticasTareas.metricasEstudiantes.map(
+                            (estudiante, index) => (
+                              <th key={index}>{estudiante.nombreEstudiante}</th>
+                            ),
+                          )}
+                          <th className="mitjana-column">Total</th>
+                        </tr>
+                      </thead>
 
-                    <tbody>
-                      {/* Valores Absolutos de Tareas */}
-                      <tr>
-                        <td>Total tasques</td>
-                        {datosMetricas.estadisticasTareas.metricasEstudiantes.map(
-                          (estudiante, index) => (
-                            <td key={index}>{estudiante.totalTareas}</td>
-                          ),
-                        )}
-                        <td className="mitjana-column">
-                          {datosMetricas.estadisticasTareas.totalTareasEquipo}
-                        </td>
-                      </tr>
+                      <tbody>
+                        {/* Valores Absolutos de Tareas */}
+                        <tr>
+                          <td>Total tasques</td>
+                          {datosMetricas.estadisticasTareas.metricasEstudiantes.map(
+                            (estudiante, index) => (
+                              <td key={index}>{estudiante.totalTareas}</td>
+                            ),
+                          )}
+                          <td className="mitjana-column">
+                            {datosMetricas.estadisticasTareas.totalTareasEquipo}
+                          </td>
+                        </tr>
 
-                      {/* Valores Absolutos de Historias */}
-                      <tr>
-                        <td>Total històries participades</td>
-                        {datosMetricas.estadisticasHistorias.metricasEstudiantes.map(
-                          (estudiante, index) => (
-                            <td key={index}>
-                              {estudiante.totalHistoriasParticipadas}
-                            </td>
-                          ),
-                        )}
-                        <td className="mitjana-column">
-                          {datosMetricas.estadisticasHistorias.totalHistorias}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+                        {/* Valores Absolutos de Historias */}
+                        <tr>
+                          <td>Total històries participades</td>
+                          {datosMetricas.estadisticasHistorias.metricasEstudiantes.map(
+                            (estudiante, index) => (
+                              <td key={index}>
+                                {estudiante.totalHistoriasParticipadas}
+                              </td>
+                            ),
+                          )}
+                          <td className="mitjana-column">
+                            {datosMetricas.estadisticasHistorias.totalHistorias}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
 
-                {/* TABLA 2: PORCENTAJES */}
-                <div className="table-responsive">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Dades</th>
-                        {datosMetricas.estadisticasTareas.metricasEstudiantes.map(
-                          (estudiante, index) => (
-                            <th key={index}>{estudiante.nombreEstudiante}</th>
-                          ),
-                        )}
-                        <th className="mitjana-column">Total</th>
-                      </tr>
-                    </thead>
+                  {/* TABLA 2: PORCENTAJES */}
+                  <div
+                    className="table-responsive"
+                    style={{ marginTop: '2rem' }}
+                  >
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Dades</th>
+                          {datosMetricas.estadisticasTareas.metricasEstudiantes.map(
+                            (estudiante, index) => (
+                              <th key={index}>{estudiante.nombreEstudiante}</th>
+                            ),
+                          )}
+                          <th className="mitjana-column">Total</th>
+                        </tr>
+                      </thead>
 
-                    <tbody>
-                      {/* Porcentajes de Tareas */}
-                      <tr>
-                        <td>Total tasques (%)</td>
-                        {datosMetricas.estadisticasTareas.metricasEstudiantes.map(
-                          (estudiante, index) => {
-                            const porcentaje = estudiante.porcentajeTareas || 0;
-                            const porcentajeFormateado =
-                              porcentaje.toLocaleString('es-ES', {
-                                minimumFractionDigits: 1,
-                                maximumFractionDigits: 1,
-                              });
+                      <tbody>
+                        {/* Porcentajes de Tareas */}
+                        <tr>
+                          <td>Total tasques (%)</td>
+                          {datosMetricas.estadisticasTareas.metricasEstudiantes.map(
+                            (estudiante, index) => {
+                              const porcentaje =
+                                estudiante.porcentajeTareas || 0;
+                              const porcentajeFormateado =
+                                porcentaje.toLocaleString('es-ES', {
+                                  minimumFractionDigits: 1,
+                                  maximumFractionDigits: 1,
+                                });
 
-                            return <td key={index}>{porcentajeFormateado}%</td>;
-                          },
-                        )}
-                        <td className="mitjana-column">100,0%</td>
-                      </tr>
+                              return (
+                                <td key={index}>{porcentajeFormateado}%</td>
+                              );
+                            },
+                          )}
+                          <td className="mitjana-column">100,0%</td>
+                        </tr>
 
-                      {/* Porcentajes de Historias */}
-                      <tr>
-                        <td>Participació en històries (%)</td>
-                        {datosMetricas.estadisticasHistorias.metricasEstudiantes.map(
-                          (estudiante, index) => {
-                            const porcentaje =
-                              estudiante.porcentajeHistorias || 0;
-                            const porcentajeFormateado =
-                              porcentaje.toLocaleString('es-ES', {
-                                minimumFractionDigits: 1,
-                                maximumFractionDigits: 1,
-                              });
+                        {/* Porcentajes de Historias */}
+                        <tr>
+                          <td>Participació en històries (%)</td>
+                          {datosMetricas.estadisticasHistorias.metricasEstudiantes.map(
+                            (estudiante, index) => {
+                              const porcentaje =
+                                estudiante.porcentajeHistorias || 0;
+                              const porcentajeFormateado =
+                                porcentaje.toLocaleString('es-ES', {
+                                  minimumFractionDigits: 1,
+                                  maximumFractionDigits: 1,
+                                });
 
-                            return <td key={index}>{porcentajeFormateado}%</td>;
-                          },
-                        )}
-                        <td className="mitjana-column">-</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+                              return (
+                                <td key={index}>{porcentajeFormateado}%</td>
+                              );
+                            },
+                          )}
+                          <td className="mitjana-column">-</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
 
-                {/* TABLA 3: DETALLES TAIGA */}
-                <div className="table-responsive" style={{ marginTop: '3rem' }}>
+                  {/* TABLA 3: DETALLES TAIGA (Texto desplegable) */}
                   <h3
                     onClick={() => setIsExpanded((prevState) => !prevState)}
                     className="expandable-header"
+                    style={{ marginTop: '2rem' }}
                   >
                     Veure detalls de les històries d&apos;usuari i les tasques{' '}
                     {isExpanded ? '▲' : '▼'}
                   </h3>
 
                   {isExpanded && (
-                    <>
-                      <h3> Detalls a Taiga</h3>
+                    <div
+                      className="table-responsive"
+                      style={{ marginTop: '1.5rem' }}
+                    >
+                      <h3
+                        style={{
+                          marginBottom: '1.5rem',
+                          fontSize: '1.2rem',
+                          color: '#475569',
+                        }}
+                      >
+                        Detalls a Taiga
+                      </h3>
                       <table>
                         <thead>
                           <tr>
@@ -279,7 +300,6 @@ const EquipoMetricsTaiga = () => {
                             <th>Estat</th>
                             <th>SP</th>
                             <th>Sprint</th>
-                            {/* Generamos las columnas de estudiantes en el mismo orden */}
                             {datosMetricas.estadisticasTareas.metricasEstudiantes.map(
                               (estudiante, index) => (
                                 <th key={index}>
@@ -294,7 +314,6 @@ const EquipoMetricsTaiga = () => {
                         </thead>
 
                         <tbody>
-                          {/* Recorremos cada historia que nos manda el backend */}
                           {datosMetricas.detallesTaiga &&
                             datosMetricas.detallesTaiga.map(
                               (historia, rowIndex) => (
@@ -305,11 +324,8 @@ const EquipoMetricsTaiga = () => {
                                   <td>{historia.puntosEsfuerzo}</td>
                                   <td>{historia.sprint || 'Backlog'}</td>
 
-                                  {/* Buscamos cuántas tareas tiene cada estudiante en esta historia en concreto */}
                                   {datosMetricas.estadisticasTareas.metricasEstudiantes.map(
                                     (estudiante, colIndex) => {
-                                      // Buscamos en el diccionario (Map) del backend usando el nombre del estudiante.
-                                      // Si no existe o es undefined, ponemos un 0.
                                       const tareasDelEstudiante =
                                         historia.tareasPorEstudiante[
                                           estudiante.nombreEstudiante
@@ -335,10 +351,12 @@ const EquipoMetricsTaiga = () => {
                             )}
                         </tbody>
                       </table>
-                    </>
+                    </div>
                   )}
                 </div>
+                {/* --- FIN DEL EFECTO TARJETA --- */}
 
+                {/* --- GRÁFICOS --- */}
                 <div className="taiga-charts" style={{ marginTop: '3rem' }}>
                   <h3>GRÀFICS</h3>
                   <div className="charts-section">
@@ -365,18 +383,18 @@ const EquipoMetricsTaiga = () => {
                                     (m) => m.porcentajeTareas,
                                   ),
                                   backgroundColor: [
-                                    '#6C9975',
-                                    '#BB6365',
-                                    '#785B75',
-                                    '#5E807F',
-                                    '#BA5A31',
-                                    '#355C7D',
-                                    '#F4A261',
-                                    '#E76F51',
-                                    '#2A9D8F',
-                                    '#264653',
-                                    '#A8DADC',
-                                    '#457B9D',
+                                    '#E27D60', // Terracota anaranjado (Estudiante 1)
+                                    '#85CDCA', // Turquesa suave (Estudiante 2)
+                                    '#E8A87C', // Melocotón (Estudiante 3)
+                                    '#C38D9E', // Rosa malva viejo (Estudiante 4)
+                                    '#41B3A3', // Verde agua intenso (Estudiante 5)
+                                    '#8D94BA', // Azul lila (Estudiante 6)
+                                    '#F3B562', // Mostaza vivo (Estudiante 7)
+                                    '#D96459', // Rojo ladrillo (Estudiante 8)
+                                    '#76B096', // Verde salvia (Estudiante 9)
+                                    '#A37C40', // Bronce / Ocre oscuro (Estudiante 10)
+                                    '#F2E394', // Amarillo vainilla (Estudiante 11)
+                                    '#B8C4BB', // Gris verdoso muy claro (Estudiante 12)
                                   ],
                                 },
                               ],
@@ -419,18 +437,18 @@ const EquipoMetricsTaiga = () => {
                                     (m) => m.porcentajeHistorias,
                                   ),
                                   backgroundColor: [
-                                    '#6C9975',
-                                    '#BB6365',
-                                    '#785B75',
-                                    '#5E807F',
-                                    '#BA5A31',
-                                    '#355C7D',
-                                    '#F4A261',
-                                    '#E76F51',
-                                    '#2A9D8F',
-                                    '#264653',
-                                    '#A8DADC',
-                                    '#457B9D',
+                                    '#E27D60', // Terracota anaranjado (Estudiante 1)
+                                    '#85CDCA', // Turquesa suave (Estudiante 2)
+                                    '#E8A87C', // Melocotón (Estudiante 3)
+                                    '#C38D9E', // Rosa malva viejo (Estudiante 4)
+                                    '#41B3A3', // Verde agua intenso (Estudiante 5)
+                                    '#8D94BA', // Azul lila (Estudiante 6)
+                                    '#F3B562', // Mostaza vivo (Estudiante 7)
+                                    '#D96459', // Rojo ladrillo (Estudiante 8)
+                                    '#76B096', // Verde salvia (Estudiante 9)
+                                    '#A37C40', // Bronce / Ocre oscuro (Estudiante 10)
+                                    '#F2E394', // Amarillo vainilla (Estudiante 11)
+                                    '#B8C4BB', // Gris verdoso muy claro (Estudiante 12)
                                   ],
                                 },
                               ],
@@ -453,7 +471,7 @@ const EquipoMetricsTaiga = () => {
                       </div>
                     </div>
 
-                    {/* Segunda fila de gráficos (Barras) */}
+                    {/* Segunda fila de gráficos (Barras Apiladas y SP) */}
                     <div className="chart-row">
                       <div className="chart-container-large">
                         <h2>Històries d&apos;usuari i tasques</h2>
@@ -472,18 +490,88 @@ const EquipoMetricsTaiga = () => {
                                 ),
                               datasets: [
                                 {
-                                  label: 'HU Tancades',
+                                  label: 'HU Obertes',
                                   data: datosMetricas.estadisticasHistorias.metricasEstudiantes.map(
-                                    (m) => m.totalHistoriasCerradas || 0,
+                                    (m) => m.historiasAbiertas || 0,
                                   ),
                                   backgroundColor: '#A7D2CB',
+                                  stack: 'Stack_HU',
                                 },
                                 {
-                                  label: 'Total Tasques',
+                                  label: 'HU Tancades',
+                                  data: datosMetricas.estadisticasHistorias.metricasEstudiantes.map(
+                                    (m) =>
+                                      m.historiasCerradas ||
+                                      m.totalHistoriasCerradas ||
+                                      0,
+                                  ),
+                                  backgroundColor: '#5b8263',
+                                  stack: 'Stack_HU',
+                                },
+                                {
+                                  label: 'Tasques Obertes',
                                   data: datosMetricas.estadisticasTareas.metricasEstudiantes.map(
-                                    (m) => m.totalTareas,
+                                    (m) => m.tareasAbiertas || 0,
                                   ),
                                   backgroundColor: '#F2D388',
+                                  stack: 'Stack_Tasques',
+                                },
+                                {
+                                  label: 'Tasques Tancades',
+                                  data: datosMetricas.estadisticasTareas.metricasEstudiantes.map(
+                                    (m) => m.tareasCerradas || 0,
+                                  ),
+                                  backgroundColor: '#e5c158',
+                                  stack: 'Stack_Tasques',
+                                },
+                              ],
+                            }}
+                            options={{
+                              responsive: true,
+                              maintainAspectRatio: false,
+                              plugins: {
+                                legend: { labels: { font: { size: 16 } } },
+                                tooltip: { mode: 'index', intersect: false },
+                              },
+                              scales: {
+                                x: {
+                                  stacked: true,
+                                  ticks: { font: { size: 14 } },
+                                },
+                                y: {
+                                  stacked: true,
+                                  ticks: { font: { size: 14 } },
+                                  beginAtZero: true,
+                                },
+                              },
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="chart-container-large">
+                        <h2>Punts d&apos;Esforç (SP) per Estudiant</h2>
+                        <div
+                          style={{
+                            position: 'relative',
+                            height: '400px',
+                            width: '100%',
+                          }}
+                        >
+                          <Bar
+                            data={{
+                              labels:
+                                datosMetricas.estadisticasHistorias.metricasEstudiantes.map(
+                                  (m) => m.nombreEstudiante,
+                                ),
+                              datasets: [
+                                {
+                                  label: 'Story Points Totals',
+                                  data: datosMetricas.estadisticasHistorias.metricasEstudiantes.map(
+                                    (m) => m.puntosEsfuerzo || 0,
+                                  ),
+                                  backgroundColor: '#8da0cb',
+                                  borderRadius: 5,
                                 },
                               ],
                             }}
@@ -495,7 +583,10 @@ const EquipoMetricsTaiga = () => {
                               },
                               scales: {
                                 x: { ticks: { font: { size: 14 } } },
-                                y: { ticks: { font: { size: 14 } } },
+                                y: {
+                                  ticks: { font: { size: 14 } },
+                                  beginAtZero: true,
+                                },
                               },
                             }}
                           />
