@@ -196,3 +196,33 @@ export const getIdsEvaluaciones = async (cursoId, token) => {
   const data = await response.json();
   return data.idsEvaluaciones; // Devuelve la lista de IDs
 };
+
+// Obtener las autoevaluaciones de un estudiante específico
+export const getMisAutoEvaluaciones = async (equipoId, estudianteId, token) => {
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/equipo/${equipoId}/autoevaluacion/${estudianteId}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    if (!response.ok) {
+      let errorMessage = 'Error al obtenir les autoevaluacions.';
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorMessage;
+      } catch (e) {}
+      throw new Error(errorMessage);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error al obtenir les autoevaluacions:', error);
+    throw error;
+  }
+};

@@ -441,6 +441,13 @@ const EquipoPage = () => {
                     </Link>
 
                     <Link
+                      to={`/equipo/${equipo.id}/datos_historicos`}
+                      className="metrics-link"
+                    >
+                      📊 HISTORIAL DE DADES DE L&apos;EQUIP
+                    </Link>
+
+                    <Link
                       to={`/equipo/${id}/metrics?org=${equipo.gitOrganizacion}&estudiantesIds=${estIds.join(',')}`}
                       className="metrics-link"
                     >
@@ -548,6 +555,17 @@ const EquipoPage = () => {
             </>
           )}
         </div>
+
+        {!isProfesor && (
+          <div className="equipo-section">
+            <Link
+              to={`/equipo/${equipo.id}/les_meves_avaluacions`}
+              className="metrics-link"
+            >
+              📝 Veure la meva autoavaluació
+            </Link>
+          </div>
+        )}
 
         {/* Organización GitHub */}
         <div className="equipo-section">

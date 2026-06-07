@@ -12,11 +12,13 @@ import EquiposPage from './pages/equipos/EquiposPage';
 import EquipoPage from './pages/equipos/EquipoPage';
 import CrearEquipo from './pages/equipos/CrearEquipo';
 import EquipoMetricsPage from './pages/equipos/EquipoMetricsPage';
+import EquipoMetricsHistory from './pages/equipos/EquipoMetricsHistory';
 import EquipoMetricsTaiga from './pages/equipos/EquipoMetricsTaiga';
 import EquipoMetricsGitHub from './pages/equipos/EquipoMetricsGitHub';
 import DatosGeneralesEquipoPage from './pages/equipos/DatosGeneralesEquipoPage';
 import EvaluacionPage from './pages/evaluaciones/EvaluacionPage';
 import EvaluacionesGeneralesPage from './pages/evaluaciones/EvaluacionesGeneralesPage';
+import MisEvaluacionesPage from './pages/evaluaciones/MisEvaluacionesPage';
 import NotFoundPage from './pages/common/NotFoundPage';
 import ForbiddenPage from './pages/common/ForbiddenPage';
 
@@ -130,6 +132,14 @@ function App() {
           }
         />
         <Route
+          path="/equipo/:equipoId/datos_historicos"
+          element={
+            <PrivateRoute requiredRole="Profesor">
+              <EquipoMetricsHistory />
+            </PrivateRoute>
+          }
+        />
+        <Route
           path="/equipo/:equipoId/evaluacion"
           element={
             <PrivateRoute requiredRole="Estudiante">
@@ -142,6 +152,14 @@ function App() {
           element={
             <PrivateRoute requiredRole="Profesor">
               <EvaluacionesGeneralesPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/equipo/:equipoId/les_meves_avaluacions"
+          element={
+            <PrivateRoute requiredRole="Estudiante">
+              <MisEvaluacionesPage />
             </PrivateRoute>
           }
         />
