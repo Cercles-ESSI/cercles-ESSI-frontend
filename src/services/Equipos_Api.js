@@ -368,7 +368,6 @@ export const confirmarProyecto = async (equipoId, proyectoUrl, token) => {
 };
 
 // Obtener métricas del equipo
-// Obtener métricas del equipo
 export const getMetrics = async (org, estudiantesIds, idEquipo, token) => {
   if (!org || !estudiantesIds?.length || !idEquipo) {
     throw new Error('Faltan parámetros necesarios.');
@@ -443,18 +442,29 @@ export const disconnectProyecto = async (equipoId, token) => {
   return await response.json();
 };
 
-// 1. Obtener las estadísticas locales de la base de datos
-export const getTaigaMetrics = async (equipoId, proyecto, token) => {
-  const response = await fetch(
-    `${API_BASE_URL}/taiga/equipo/${equipoId}/metrics?proyecto=${proyecto}`,
-    {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+//Obtener las estadísticas locales de la base de datos (con filtros)
+export const getTaigaMetrics = async (
+  equipoId,
+  proyecto,
+  token,
+  tipoFiltro = 'global',
+  evaluacionId = null,
+) => {
+  // Construimos la URL base con el proyecto y el tipo de filtro
+  let url = `${API_BASE_URL}/taiga/equipo/${equipoId}/metrics?proyecto=${proyecto}&tipoFiltro=${tipoFiltro}`;
+
+  // Si el profe ha elegido un sprint concreto, añadimos su ID a la URL
+  if (evaluacionId) {
+    url += `&evaluacionId=${evaluacionId}`;
+  }
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
     },
-  );
+  });
 
   if (!response.ok) {
     throw new Error(

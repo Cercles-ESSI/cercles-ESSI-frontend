@@ -21,7 +21,7 @@
 .toggle-button {
   padding: 1.5rem 1.5rem 1rem 1.5rem;
   cursor: pointer;
-  color: #94a3b8; /* Gris azulado suave */
+  color: #94a3b8;
   font-size: 1.3rem;
   transition: color 0.2s ease;
   display: flex;
@@ -29,7 +29,7 @@
 }
 
 .toggle-button:hover {
-  color: #ffffff; /* Se ilumina al pasar el ratón */
+  color: #ffffff;
 }
 
 /* Centrar la hamburguesa cuando está cerrado */
@@ -46,7 +46,7 @@
   margin-top: 1rem;
 }
 
-/* 3. Enlaces individuales (Efecto "Píldora") */
+/* 3. Enlaces individuales*/
 .menu-items a {
   display: flex;
   align-items: center;
@@ -57,6 +57,8 @@
   transition: all 0.2s ease;
   white-space: nowrap;
   overflow: hidden;
+  border-radius: 8px;
+  border-left: 4px solid transparent;
 }
 
 /* 4. Efecto Hover en los enlaces */
@@ -65,7 +67,19 @@
   color: #ffffff;
 }
 
-/* 5. Iconos de React-Icons (Los SVG dentro de la etiqueta <a>) */
+.menu-items a.active {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border-left: 4px solid #6c9975;
+}
+
+/* Coloreamos también el icono de la página actual */
+.menu-items a.active svg {
+  color: #6c9975;
+}
+/* ---------------------------- */
+
+/* 5. Iconos de React-Icons */
 .menu-items a svg {
   min-width: 24px;
   font-size: 1.2rem;
@@ -76,38 +90,4 @@
 
 .menu-items a:hover svg {
   color: #ffffff;
-}
-
-/* 6. Texto del enlace */
-.link-text {
-  font-size: 1rem;
-  font-weight: 500;
-  transition: opacity 0.2s ease;
-}
-
-/* 7. Ajustes cuando la barra está CERRADA */
-.sidebar.closed .link-text {
-  display: none;
-}
-
-.sidebar.closed .menu-items a {
-  margin: 8px 12px;
-  padding: 12px 0;
-  justify-content: center;
-}
-
-.sidebar.closed .menu-items a svg {
-  margin-right: 0;
-}
-
-/* 8. Contenedor de Logout (Abajo del todo) */
-.logout-container {
-  margin-top: auto;
-  padding: 20px 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  transition: all 0.3s ease;
-}
-
-.sidebar.closed .logout-text {
-  display: none;
 }

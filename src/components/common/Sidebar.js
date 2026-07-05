@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { NavLink } from 'react-router-dom';
 import {
   FaBars,
   FaHome,
@@ -11,7 +12,7 @@ import Logout from '../../components/auth/Logout';
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
-  const rol = localStorage.getItem('rol'); // Obtenemos el rol del usuario
+  const rol = localStorage.getItem('rol');
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -23,29 +24,29 @@ const Sidebar = () => {
         <FaBars />
       </div>
       <div className="menu-items">
-        <a href="/home">
+        <NavLink to="/home">
           <FaHome />
           <span className="link-text">Inici</span>
-        </a>
-        <a href="/perfil">
+        </NavLink>
+        <NavLink to="/perfil">
           <FaUser />
           <span className="link-text">Perfil</span>
-        </a>
+        </NavLink>
         {rol === 'Estudiante' && (
-          <a href="/equipos">
+          <NavLink to="/equipos">
             <FaProjectDiagram />
             <span className="link-text">Equips</span>
-          </a>
+          </NavLink>
         )}
         {rol === 'Profesor' && (
-          <a href="/cursos">
+          <NavLink to="/cursos">
             <FaBook />
             <span className="link-text">Cursos</span>
-          </a>
+          </NavLink>
         )}
-        <div className={`logout-container ${isOpen ? '' : 'closed'}`}>
-          <Logout isSidebarOpen={isOpen} />
-        </div>
+      </div>
+      <div className={`logout-container ${isOpen ? '' : 'closed'}`}>
+        <Logout isSidebarOpen={isOpen} />
       </div>
     </div>
   );

@@ -1,80 +1,276 @@
-/* 1. FONDO DE PANTALLA */
-.home-page {
-  background-color: #f4f7f6 !important;
+/* 1. FONDO DE PANTALLA Y LAYOUT PRINCIPAL */
+.home-page.dashboard {
+  background-color: #f4f7f6 !important; /* Fondo claro de la imagen */
   min-height: 100vh !important;
   width: 100% !important;
-
-  padding-left: 260px !important;
+  padding-left: 260px !important; /* Padding lateral para Sidebar */
   box-sizing: border-box !important;
-
   display: flex !important;
-  align-items: center !important;
+  align-items: flex-start !important; /* Alinear arriba, no centrar */
   justify-content: center !important;
 }
 
 .content {
   width: 100% !important;
   margin: 0 !important;
-  padding: 40px !important;
-  display: flex !important;
-  justify-content: center !important;
+  padding: 30px !important; /* Ajustar padding lateral del contenido */
   box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important; /* Organizar filas */
+  gap: 30px !important; /* Espacio entre filas */
+  max-width: 1400px; /* Ancho máximo para el dashboard */
 }
 
-/* 2. LA TARJETA PRINCIPAL (La 'Card') */
-.welcome-section {
-  width: 100%;
-  max-width: 950px;
+/* 2. DISEÑO DE FILAS DEL DASHBOARD */
+.dashboard-row {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important; /* Dos columnas por fila */
+  gap: 30px !important; /* Espacio entre columnas */
+  width: 100% !important;
+}
+
+/* 3. ESTILOS DE SECCIONES (CARDS) */
+.dashboard-section {
   background-color: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04); /* Sombra mucho más sutil y profesional */
-  padding: 40px;
+  padding: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
   border: 1px solid rgba(0, 0, 0, 0.03);
+  box-sizing: border-box;
 }
 
-.welcome-content {
+.dashboard-section h2 {
+  font-size: 1.4rem;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-weight: 700;
+  text-align: left;
+}
+
+/* 4. TARJETA DE BIENVENIDA */
+.welcome-section .welcome-content-wrapper {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 40px;
-}
-
-/* 3. IMAGEN Y TEXTO */
-.home-image {
-  max-width: 350px;
-  height: auto;
-  border-radius: 10px;
+  gap: 25px;
 }
 
 .welcome-text {
   flex: 1;
-  min-width: 300px;
 }
 
 .welcome-text h1 {
   color: #2c3e50;
-  font-size: 2.2rem;
-  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
   font-weight: 700;
+  text-align: left;
+}
+
+.user-name {
+  color: #6c9975; /* Nombre en verde como en la imagen */
+  font-weight: bold;
 }
 
 .welcome-text h2 {
-  font-size: 1.1rem;
+  font-size: 1rem;
   line-height: 1.6;
   color: #64748b;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   text-align: left;
   font-weight: 400;
 }
 
-.user-name {
-  color: #6c9975;
+/* 5. CARTAS KPI */
+.kpi-card-container {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important; /* Dos KPI por fila */
+  gap: 20px !important;
+}
+
+.kpi-card {
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.02);
+  box-sizing: border-box;
+}
+
+.kpi-title {
+  font-size: 1rem;
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.kpi-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #000;
+  margin: 0;
+  text-align: left;
+}
+
+/* Colores Pastel para KPI */
+.kpi-card.yellow {
+  background-color: #ffff99;
+}
+.kpi-card.blue {
+  background-color: #ccf0ff;
+}
+.kpi-card.purple {
+  background-color: #e6ccff;
+}
+.kpi-card.green {
+  background-color: #ccffcc;
+}
+
+/* 6. SECCIÓN "VEUS CURSOS" */
+.veus-cursos-card-container {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 15px !important;
+}
+
+.veus-cursos-card {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  background-color: #fcfcfc;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.veus-cursos-card .course-content-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.course-title {
+  font-size: 1rem;
+  color: #333;
+  font-weight: 600;
+  margin: 0;
+  text-align: left;
+  line-height: 1.3;
+}
+
+/* 7. SECCIÓN "ESDEVENIMENTS PROPERS" */
+
+.calendar-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 10px;
+}
+
+/* Contenedor principal del calendario */
+.react-calendar {
+  width: 100%;
+  max-width: 400px;
+  background: white;
+  border: none !important;
+  font-family: inherit !important;
+}
+
+/* 1. La cabecera (Mes y Año + Botones) */
+.react-calendar__navigation {
+  display: flex;
+  height: 44px;
+  margin-bottom: 1em;
+}
+
+.react-calendar__navigation button {
+  min-width: 44px;
+  background: none;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2c3e50;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.react-calendar__navigation button:hover {
+  background-color: #f4f7f6 !important;
+}
+
+/* 2. Días de la semana (DL, DT, DC...) */
+.react-calendar__month-view__weekdays {
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-bottom: 10px;
+}
+
+.react-calendar__month-view__weekdays__weekday abbr {
+  text-decoration: none !important;
+}
+
+/* 3. Cuadrícula de los días (LA SOLUCIÓN AL DESORDEN) */
+.react-calendar__month-view__days {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr) !important;
+  gap: 2px;
+}
+
+/* 4. Casilla de cada día */
+.react-calendar__tile {
+  background: none;
+  border: none;
+  padding: 8px 0 !important;
+  border-radius: 8px;
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  height: 48px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: #333;
+}
+
+.react-calendar__tile:hover {
+  background-color: #f0fdf4 !important;
+}
+
+/* Día actual (Hoy) */
+.react-calendar__tile--now {
+  background-color: #e2e8f0 !important;
+  color: #1e293b;
   font-weight: bold;
 }
 
-/* 4. RECORDATORIOS */
+/* Día seleccionado */
+.react-calendar__tile--active {
+  background-color: #6c9975 !important;
+  color: white !important;
+  font-weight: bold;
+}
+
+/* Ocultar días del mes anterior/siguiente para que quede más limpio */
+.react-calendar__month-view__days__day--neighboringMonth {
+  color: #cbd5e1 !important;
+}
+
+/* 5. El punto del evento */
+.event-dot {
+  height: 6px;
+  width: 6px;
+  border-radius: 50%;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+/* 8. RECORDATORIOS Y BOTONES (Adaptados del CSS original) */
 .config-reminders {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   background-color: #fdf2f2;
   padding: 15px;
   border-radius: 8px;
@@ -88,25 +284,48 @@
   margin: 0;
 }
 
-/* 5. BOTONES */
 .button-container {
   display: flex;
   gap: 1rem;
 }
 
 .navigate-button {
-  background-color: #1e293b;
+  background-color: #1a1a2e; /* Color oscuro como en la imagen */
   color: white;
-  padding: 12px 24px;
+  padding: 10px 20px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   transition: all 0.2s ease;
 }
 
 .navigate-button:hover {
-  background-color: #334155;
-  transform: translateY(-2px);
+  background-color: #2c2c44;
+  transform: translateY(-1px);
+}
+
+.course-badges-wrapper {
+  display: flex;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.badge {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.badge-students {
+  background-color: #e2e8f0; /* Un gris azulado suave */
+  color: #334155;
+}
+
+.badge-teams {
+  background-color: #dcfce7; /* Un verde pastel suave */
+  color: #166534;
 }

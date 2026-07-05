@@ -5,6 +5,7 @@ import {
   getEquipoDetalle,
   syncTaigaMetrics,
 } from '../../services/Equipos_Api';
+import { getIdsEvaluaciones } from '../../services/Evaluaciones_Api';
 import Sidebar from '../../components/common/Sidebar';
 import './EquipoMetricsTaiga.css';
 import loadingGif from '../../assets/images/15-28-43-29_512.webp';
@@ -32,12 +33,9 @@ const EquipoMetricsTaiga = () => {
 
   const token = localStorage.getItem('jwtToken');
 
-  // Estados
+  // --- ESTADOS ORIGINALES ---
   const [equipo, setEquipo] = useState(null);
-  const [metrics, setMetrics] = useState([]);
-  const [globalIssueDetails, setGlobalIssueDetails] = useState([]);
   const [loadingEquipo, setLoadingEquipo] = useState(true);
-  const [loadingMetrics, setLoadingMetrics] = useState(true);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState(null);
   const [localEstudiantesIds, setLocalEstudiantesIds] = useState([]);
@@ -47,13 +45,30 @@ const EquipoMetricsTaiga = () => {
   const [datosMetricas, setDatosMetricas] = useState(null);
   const [loadingTaigaLocal, setLoadingTaigaLocal] = useState(true);
 
-  // --- FUNCIÓN DE CARGA DE TAIGA LOCAL ---
-  const cargarEstadisticasLocales = async (equipoId, proyecto) => {
-    try {
-      if (!datosMetricas) setLoadingTaigaLocal(true);
+  // --- ESTADOS DEL FILTRO ---
+  const [filtroSeleccionado, setFiltroSeleccionado] = useState('global');
+  const [sprints, setSprints] = useState([]);
 
-      // Le pasamos la variable nombreProyecto a la API
-      const data = await getTaigaMetrics(equipoId, proyecto, token);
+  const cargarEstadisticasLocales = async (equipoId, proyecto, filtroStr) => {
+    try {
+      setLoadingTaigaLocal(true);
+
+      let tipoFiltro = 'global';
+      let evaluacionId = null;
+
+      if (filtroStr.startsWith('sprint-')) {
+        tipoFiltro = 'sprint';
+        evaluacionId = filtroStr.split('-')[1];
+      }
+
+      // Le pasamos el filtro a la API
+      const data = await getTaigaMetrics(
+        equipoId,
+        proyecto,
+        token,
+        tipoFiltro,
+        evaluacionId,
+      );
       setDatosMetricas(data);
     } catch (err) {
       console.error('Error en cargarEstadisticasLocales:', err);
@@ -62,13 +77,22 @@ const EquipoMetricsTaiga = () => {
     }
   };
 
-  // 1. Cargar Detalle del Equipo
+  // 1. Cargar Detalle del Equipo y Sprints
   useEffect(() => {
     const fetchEquipoDetalle = async () => {
       try {
         setLoadingEquipo(true);
         const equipoData = await getEquipoDetalle(id, token);
         setEquipo(equipoData);
+
+        const ids = await getIdsEvaluaciones(equipoData.cursoId, token);
+
+        // Transformamos el array de números [13, 14, 15] a objetos para el desplegable
+        const sprintsData = ids.map((sprintId) => ({
+          id: sprintId,
+        }));
+
+        setSprints(sprintsData);
       } catch (error) {
         setError("No se pudo carregar la informació de l'equip.");
       } finally {
@@ -87,35 +111,38 @@ const EquipoMetricsTaiga = () => {
     }
   }, [estudiantesIds, localEstudiantesIds]);
 
-  // 4. Sincronización en segundo plano de TAIGA (Carga en 2 tiempos)
+  // 3. Sincronización en segundo plano de TAIGA (Solo se ejecuta al entrar a la página)
   useEffect(() => {
     if (id && proyecto) {
-      // 1. Cargamos lo local pasándole el proyecto
-      cargarEstadisticasLocales(id, proyecto);
-
-      // 2. Sincronizamos pasándole también el proyecto
       syncTaigaMetrics(id, proyecto, token)
         .then(() => {
-          console.log(
-            'Sincronització de Taiga completada. Actualitzant taula...',
-          );
-          cargarEstadisticasLocales(id, proyecto);
+          console.log('Sincronització de Taiga completada.');
+          // Tras sincronizar, recargamos los datos con el filtro que esté puesto
+          cargarEstadisticasLocales(id, proyecto, filtroSeleccionado);
         })
         .catch((err) => console.error('Error en sync en segon pla:', err));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, proyecto, token]);
+
+  // 4. Efecto para reaccionar a los cambios del Filtro
+  useEffect(() => {
+    if (id && proyecto) {
+      cargarEstadisticasLocales(id, proyecto, filtroSeleccionado);
+    }
+    // Cada vez que filtroSeleccionado cambie, pedimos los nuevos datos
+  }, [id, proyecto, token, filtroSeleccionado]);
 
   // 5. Animación del progreso de carga
   useEffect(() => {
     let interval;
-    if (loadingEquipo || loadingMetrics) {
-      interval = setInterval(() => {
-        setProgress((prev) => (prev >= 100 ? 0 : prev + 1));
-      }, 50);
+    if (loadingEquipo || loadingTaigaLocal) {
+      interval = setInterval(
+        () => setProgress((prev) => (prev >= 100 ? 0 : prev + 1)),
+        50,
+      );
     }
     return () => clearInterval(interval);
-  }, [loadingEquipo, loadingMetrics]);
+  }, [loadingEquipo, loadingTaigaLocal]);
 
   // --- BLOQUEOS DE PANTALLA ---
   if (loadingEquipo) {
@@ -131,13 +158,11 @@ const EquipoMetricsTaiga = () => {
 
   if (error) return <div className="error-message">{error}</div>;
 
-  const handleBackClick = () => navigate(-1);
-
   return (
     <div className="metrics-page">
       <Sidebar />
       <div className="metrics-content">
-        <button className="back-button" onClick={handleBackClick}>
+        <button className="back-button" onClick={() => navigate(-1)}>
           Torna enrere
         </button>
 
@@ -149,13 +174,35 @@ const EquipoMetricsTaiga = () => {
         <div className="taiga-section">
           <h3>Resum de contribucions individuals a Taiga</h3>
 
+          {/* --- BARRA DE FILTROS --- */}
+          <div style={filterContainerStyle}>
+            <div style={filterGroupStyle}>
+              <label htmlFor="filtro-tiempo" style={labelStyle}>
+                Filtrar dades:
+              </label>
+              <select
+                id="filtro-tiempo"
+                value={filtroSeleccionado}
+                onChange={(e) => setFiltroSeleccionado(e.target.value)}
+                style={selectStyle}
+              >
+                <option value="global">Global (Tot el projecte)</option>
+                {sprints.map((sprint) => (
+                  <option key={sprint.id} value={`sprint-${sprint.id}`}>
+                    Sprint: {sprint.id}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          {/* ------------------------ */}
+
           {loadingTaigaLocal ? (
             <p className="loading-text">🔄 Carregant dades des de Taiga...</p>
           ) : (
             datosMetricas &&
             datosMetricas.estadisticasTareas && (
               <>
-                {/* --- INICIO DEL EFECTO TARJETA (CARD) PARA LAS TABLAS --- */}
                 <div className="card">
                   {/* TABLA 1: VALORES ABSOLUTOS */}
                   <div className="table-responsive">
@@ -171,9 +218,7 @@ const EquipoMetricsTaiga = () => {
                           <th className="mitjana-column">Total</th>
                         </tr>
                       </thead>
-
                       <tbody>
-                        {/* Valores Absolutos de Tareas */}
                         <tr>
                           <td>Total tasques</td>
                           {datosMetricas.estadisticasTareas.metricasEstudiantes.map(
@@ -185,8 +230,6 @@ const EquipoMetricsTaiga = () => {
                             {datosMetricas.estadisticasTareas.totalTareasEquipo}
                           </td>
                         </tr>
-
-                        {/* Valores Absolutos de Historias */}
                         <tr>
                           <td>Total històries participades</td>
                           {datosMetricas.estadisticasHistorias.metricasEstudiantes.map(
@@ -221,46 +264,38 @@ const EquipoMetricsTaiga = () => {
                           <th className="mitjana-column">Total</th>
                         </tr>
                       </thead>
-
                       <tbody>
-                        {/* Porcentajes de Tareas */}
                         <tr>
                           <td>Total tasques (%)</td>
                           {datosMetricas.estadisticasTareas.metricasEstudiantes.map(
-                            (estudiante, index) => {
-                              const porcentaje =
-                                estudiante.porcentajeTareas || 0;
-                              const porcentajeFormateado =
-                                porcentaje.toLocaleString('es-ES', {
+                            (estudiante, index) => (
+                              <td key={index}>
+                                {(
+                                  estudiante.porcentajeTareas || 0
+                                ).toLocaleString('es-ES', {
                                   minimumFractionDigits: 1,
                                   maximumFractionDigits: 1,
-                                });
-
-                              return (
-                                <td key={index}>{porcentajeFormateado}%</td>
-                              );
-                            },
+                                })}
+                                %
+                              </td>
+                            ),
                           )}
                           <td className="mitjana-column">100,0%</td>
                         </tr>
-
-                        {/* Porcentajes de Historias */}
                         <tr>
                           <td>Participació en històries (%)</td>
                           {datosMetricas.estadisticasHistorias.metricasEstudiantes.map(
-                            (estudiante, index) => {
-                              const porcentaje =
-                                estudiante.porcentajeHistorias || 0;
-                              const porcentajeFormateado =
-                                porcentaje.toLocaleString('es-ES', {
+                            (estudiante, index) => (
+                              <td key={index}>
+                                {(
+                                  estudiante.porcentajeHistorias || 0
+                                ).toLocaleString('es-ES', {
                                   minimumFractionDigits: 1,
                                   maximumFractionDigits: 1,
-                                });
-
-                              return (
-                                <td key={index}>{porcentajeFormateado}%</td>
-                              );
-                            },
+                                })}
+                                %
+                              </td>
+                            ),
                           )}
                           <td className="mitjana-column">-</td>
                         </tr>
@@ -268,11 +303,11 @@ const EquipoMetricsTaiga = () => {
                     </table>
                   </div>
 
-                  {/* TABLA 3: DETALLES TAIGA (Texto desplegable) */}
+                  {/* TABLA 3: DETALLES TAIGA */}
                   <h3
-                    onClick={() => setIsExpanded((prevState) => !prevState)}
+                    onClick={() => setIsExpanded((prev) => !prev)}
                     className="expandable-header"
-                    style={{ marginTop: '2rem' }}
+                    style={{ marginTop: '2rem', cursor: 'pointer' }}
                   >
                     Veure detalls de les històries d&apos;usuari i les tasques{' '}
                     {isExpanded ? '▲' : '▼'}
@@ -312,7 +347,6 @@ const EquipoMetricsTaiga = () => {
                             <th className="mitjana-column">Total membres</th>
                           </tr>
                         </thead>
-
                         <tbody>
                           {datosMetricas.detallesTaiga &&
                             datosMetricas.detallesTaiga.map(
@@ -323,22 +357,15 @@ const EquipoMetricsTaiga = () => {
                                   <td>{historia.estado}</td>
                                   <td>{historia.puntosEsfuerzo}</td>
                                   <td>{historia.sprint || 'Backlog'}</td>
-
                                   {datosMetricas.estadisticasTareas.metricasEstudiantes.map(
-                                    (estudiante, colIndex) => {
-                                      const tareasDelEstudiante =
-                                        historia.tareasPorEstudiante[
+                                    (estudiante, colIndex) => (
+                                      <td key={colIndex}>
+                                        {historia.tareasPorEstudiante[
                                           estudiante.nombreEstudiante
-                                        ] || 0;
-
-                                      return (
-                                        <td key={colIndex}>
-                                          {tareasDelEstudiante}
-                                        </td>
-                                      );
-                                    },
+                                        ] || 0}
+                                      </td>
+                                    ),
                                   )}
-
                                   <td>{historia.tareasSinAsignar}</td>
                                   <td className="mitjana-column">
                                     {historia.totalTareas}
@@ -354,13 +381,12 @@ const EquipoMetricsTaiga = () => {
                     </div>
                   )}
                 </div>
-                {/* --- FIN DEL EFECTO TARJETA --- */}
 
-                {/* --- GRÁFICOS --- */}
+                {/* --- GRÁFICOS ---  */}
                 <div className="taiga-charts" style={{ marginTop: '3rem' }}>
                   <h3>GRÀFICS</h3>
                   <div className="charts-section">
-                    {/* Primera fila de gráficos (Los dos quesos) */}
+                    {/* Primera fila de gráficos (Quesos) */}
                     <div className="chart-row">
                       <div className="chart-container">
                         <h2>Repartiment de Tasques (%)</h2>
@@ -383,18 +409,18 @@ const EquipoMetricsTaiga = () => {
                                     (m) => m.porcentajeTareas,
                                   ),
                                   backgroundColor: [
-                                    '#E27D60', // Terracota anaranjado (Estudiante 1)
-                                    '#85CDCA', // Turquesa suave (Estudiante 2)
-                                    '#E8A87C', // Melocotón (Estudiante 3)
-                                    '#C38D9E', // Rosa malva viejo (Estudiante 4)
-                                    '#41B3A3', // Verde agua intenso (Estudiante 5)
-                                    '#8D94BA', // Azul lila (Estudiante 6)
-                                    '#F3B562', // Mostaza vivo (Estudiante 7)
-                                    '#D96459', // Rojo ladrillo (Estudiante 8)
-                                    '#76B096', // Verde salvia (Estudiante 9)
-                                    '#A37C40', // Bronce / Ocre oscuro (Estudiante 10)
-                                    '#F2E394', // Amarillo vainilla (Estudiante 11)
-                                    '#B8C4BB', // Gris verdoso muy claro (Estudiante 12)
+                                    '#E27D60',
+                                    '#85CDCA',
+                                    '#E8A87C',
+                                    '#C38D9E',
+                                    '#41B3A3',
+                                    '#8D94BA',
+                                    '#F3B562',
+                                    '#D96459',
+                                    '#76B096',
+                                    '#A37C40',
+                                    '#F2E394',
+                                    '#B8C4BB',
                                   ],
                                 },
                               ],
@@ -406,8 +432,7 @@ const EquipoMetricsTaiga = () => {
                                 legend: { labels: { font: { size: 14 } } },
                                 tooltip: {
                                   callbacks: {
-                                    label: (context) =>
-                                      ` ${context.raw.toFixed(1)}%`,
+                                    label: (c) => ` ${c.raw.toFixed(1)}%`,
                                   },
                                 },
                               },
@@ -437,18 +462,18 @@ const EquipoMetricsTaiga = () => {
                                     (m) => m.porcentajeHistorias,
                                   ),
                                   backgroundColor: [
-                                    '#E27D60', // Terracota anaranjado (Estudiante 1)
-                                    '#85CDCA', // Turquesa suave (Estudiante 2)
-                                    '#E8A87C', // Melocotón (Estudiante 3)
-                                    '#C38D9E', // Rosa malva viejo (Estudiante 4)
-                                    '#41B3A3', // Verde agua intenso (Estudiante 5)
-                                    '#8D94BA', // Azul lila (Estudiante 6)
-                                    '#F3B562', // Mostaza vivo (Estudiante 7)
-                                    '#D96459', // Rojo ladrillo (Estudiante 8)
-                                    '#76B096', // Verde salvia (Estudiante 9)
-                                    '#A37C40', // Bronce / Ocre oscuro (Estudiante 10)
-                                    '#F2E394', // Amarillo vainilla (Estudiante 11)
-                                    '#B8C4BB', // Gris verdoso muy claro (Estudiante 12)
+                                    '#E27D60',
+                                    '#85CDCA',
+                                    '#E8A87C',
+                                    '#C38D9E',
+                                    '#41B3A3',
+                                    '#8D94BA',
+                                    '#F3B562',
+                                    '#D96459',
+                                    '#76B096',
+                                    '#A37C40',
+                                    '#F2E394',
+                                    '#B8C4BB',
                                   ],
                                 },
                               ],
@@ -460,8 +485,7 @@ const EquipoMetricsTaiga = () => {
                                 legend: { labels: { font: { size: 14 } } },
                                 tooltip: {
                                   callbacks: {
-                                    label: (context) =>
-                                      ` ${context.raw.toFixed(1)}%`,
+                                    label: (c) => ` ${c.raw.toFixed(1)}%`,
                                   },
                                 },
                               },
@@ -602,6 +626,44 @@ const EquipoMetricsTaiga = () => {
       </div>
     </div>
   );
+};
+
+// --- ESTILOS DEL FILTRO ---
+const filterContainerStyle = {
+  display: 'flex',
+  justifyContent: 'center',
+  marginBottom: '30px',
+  marginTop: '20px',
+};
+
+const filterGroupStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  backgroundColor: '#f8fafc',
+  padding: '12px 24px',
+  borderRadius: '10px',
+  border: '1px solid #e2e8f0',
+  boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
+};
+
+const labelStyle = {
+  fontWeight: '600',
+  color: '#475569',
+  marginRight: '15px',
+  fontSize: '1rem',
+};
+
+const selectStyle = {
+  padding: '10px 16px',
+  borderRadius: '8px',
+  border: '1px solid #cbd5e1',
+  backgroundColor: 'white',
+  color: '#334155',
+  fontSize: '0.95rem',
+  outline: 'none',
+  cursor: 'pointer',
+  minWidth: '220px',
+  fontWeight: '500',
 };
 
 export default EquipoMetricsTaiga;
