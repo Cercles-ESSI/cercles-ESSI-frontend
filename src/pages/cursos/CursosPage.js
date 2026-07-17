@@ -77,90 +77,109 @@ const CursosPage = () => {
     }
   };
 
+  // Variable auxiliar para renderizar la tabla que toca según la pestaña activa
+  const cursosMostrados = showInactiveCourses ? cursosInactivos : cursosActivos;
+
   return (
     <div className="cursos-page">
       <Sidebar />
       <div className="content">
-        <h1>Els meus cursos</h1>
-        <div className="buttons-container">
-          <button
-            className="create-course-button"
-            onClick={handleCreateNewCourse}
-          >
-            Crear un nou curs
-          </button>
-          <button
-            className="add-professor-button"
-            onClick={() => setShowProfessorPopup(true)}
-          >
-            Afegir professor
-          </button>
+        {/* NUEVA CABECERA */}
+        <div className="page-header">
+          <div className="header-titles">
+            <h1>Els meus cursos</h1>
+            <p>Gestió i resum de les teves assignatures.</p>
+          </div>
+          <div className="header-actions">
+            <button
+              className="btn-secondary"
+              onClick={() => setShowProfessorPopup(true)}
+            >
+              Afegir professor
+            </button>
+            <button className="btn-primary" onClick={handleCreateNewCourse}>
+              Crear un nou curs
+            </button>
+          </div>
         </div>
-        <h2>Els meus cursos actius</h2>
-        <table className="cursos-table">
-          <thead>
-            <tr>
-              <th>Nom de l&apos;assignatura</th>
-              <th>Any d&apos;inici</th>
-              <th>Quadrimestre</th>
-              <th>Nombre d&apos;estudiants</th>
-              <th>Nombre d&apos;equips</th>
-              <th>Nombre d&apos;estudiants sense equip</th>
-            </tr>
-          </thead>
-          <tbody>
-            {cursosActivos.map((curso) => (
-              <tr
-                key={curso.id}
-                onClick={() => handleRowClick(curso.id)}
-                className="clicable-row"
-              >
-                <td>{curso.nombreAsignatura}</td>
-                <td>{curso.añoInicio}</td>
-                <td>{curso.cuatrimestre === 1 ? 'Tardor' : 'Primavera'}</td>
-                <td>{curso.numeroEstudiantes}</td>
-                <td>{curso.numeroEquipos}</td>
-                <td>{curso.numeroEstudiantesSinEquipo}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <div
-          className="toggle-inactive-courses"
-          onClick={() => setShowInactiveCourses(!showInactiveCourses)}
-        >
-          Veure els meus cursos inactius {showInactiveCourses ? '⬇' : '➡'}
-        </div>
-        {showInactiveCourses && (
-          <table className="cursos-table">
-            <thead>
-              <tr>
-                <th>Nom de l&apos;assignatura</th>
-                <th>Any d&apos;inici</th>
-                <th>Quadrimestre</th>
-                <th>Nombre d&apos;estudiants</th>
-                <th>Nombre d&apos;equips</th>
-                <th>Nombre d&apos;estudiants sense equip</th>
-              </tr>
-            </thead>
-            <tbody>
-              {cursosInactivos.map((curso) => (
-                <tr
-                  key={curso.id}
-                  onClick={() => handleRowClick(curso.id)}
-                  className="clicable-row"
-                >
-                  <td>{curso.nombreAsignatura}</td>
-                  <td>{curso.añoInicio}</td>
-                  <td>{curso.cuatrimestre === 1 ? 'Tardor' : 'Primavera'}</td>
-                  <td>{curso.numeroEstudiantes}</td>
-                  <td>{curso.numeroEquipos}</td>
-                  <td>{curso.numeroEstudiantesSinEquipo}</td>
+
+        {/* CONTENEDOR DE LA TABLA */}
+        <div className="table-card">
+          {/* PESTAÑAS*/}
+          <div className="table-tabs">
+            <button
+              className={`tab ${!showInactiveCourses ? 'active' : ''}`}
+              onClick={() => setShowInactiveCourses(false)}
+            >
+              Actius
+            </button>
+            <button
+              className={`tab ${showInactiveCourses ? 'active' : ''}`}
+              onClick={() => setShowInactiveCourses(true)}
+            >
+              Inactius
+            </button>
+          </div>
+
+          <div className="table-responsive">
+            <table className="modern-table">
+              <thead>
+                <tr>
+                  <th>Nom de l&apos;assignatura</th>
+                  <th>Any / Quadrimestre</th>
+                  <th>Estudiants</th>
+                  <th>Equips</th>
+                  <th>Sense equip</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+              </thead>
+              <tbody>
+                {cursosMostrados.map((curso) => (
+                  <tr
+                    key={curso.id}
+                    onClick={() => handleRowClick(curso.id)}
+                    className="clicable-row"
+                  >
+                    <td className="fw-bold">{curso.nombreAsignatura}</td>
+                    <td>
+                      {curso.añoInicio} -{' '}
+                      {curso.cuatrimestre === 1 ? 'Q1' : 'Q2'}
+                    </td>
+                    <td>
+                      <span className="badge badge-students">
+                        {curso.numeroEstudiantes}
+                      </span>
+                    </td>
+                    <td>
+                      <span className="badge badge-teams">
+                        {curso.numeroEquipos}
+                      </span>
+                    </td>
+                    <td>
+                      <span
+                        className={`badge ${
+                          curso.numeroEstudiantesSinEquipo > 0
+                            ? 'badge-warning'
+                            : 'badge-success'
+                        }`}
+                      >
+                        {curso.numeroEstudiantesSinEquipo}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* Mensaje de estado vacío si no hay cursos en esa pestaña */}
+            {cursosMostrados.length === 0 && (
+              <div className="empty-state">
+                Encara no hi ha cursos en aquesta secció.
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* POPUPS*/}
         {showProfessorPopup && (
           <div className="popup-overlay">
             <div className="popup">
@@ -192,30 +211,33 @@ const CursosPage = () => {
                 />
               </div>
               <div className="buttons-container">
-                <button className="popup-button" onClick={handleAddProfessor}>
-                  Afegir
-                </button>
                 <button
                   className="popup-button cancel"
                   onClick={() => setShowProfessorPopup(false)}
                 >
                   Cancel·lar
                 </button>
+                <button className="popup-button" onClick={handleAddProfessor}>
+                  Afegir
+                </button>
               </div>
             </div>
           </div>
         )}
+
         {showSuccessPopup && (
           <div className="popup-overlay">
             <div className="popup">
               <h2>Professor afegit correctament</h2>
               <p>{successMessage}</p>
-              <button
-                className="popup-button"
-                onClick={() => setShowSuccessPopup(false)}
-              >
-                Tanca
-              </button>
+              <div className="buttons-container">
+                <button
+                  className="popup-button"
+                  onClick={() => setShowSuccessPopup(false)}
+                >
+                  Tanca
+                </button>
+              </div>
             </div>
           </div>
         )}

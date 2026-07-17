@@ -4,125 +4,215 @@ html {
   padding: 0;
   width: 100%;
   height: 100%;
-  overflow-x: hidden; /* Evita scroll horizontal */
-  overflow-y: auto; /* Habilita scroll vertical */
+  background-color: #f4f7f6;
+  font-family: sans-serif;
 }
 
 .cursos-page {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: #f5f5f5;
-  min-height: 100vh; /* Ocupa al menos toda la ventana */
-  height: auto; /* Permite que crezca según el contenido */
-  padding: 20px; /* Espaciado alrededor */
+  flex-direction: row;
+  min-height: 100vh;
+  padding-left: 260px !important;
 }
 
 .cursos-page .content {
-  padding: 20px;
-  width: 100%;
-  max-width: 1400px;
-  box-sizing: border-box;
-  background-color: #ffffff;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  overflow: auto; /* Permite scroll dentro del contenedor si es necesario */
+  flex: 1;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: transparent;
+  box-shadow: none;
 }
 
-.cursos-table {
+/* --- CABECERA --- */
+.page-header {
+  width: 100%;
+  max-width: 1100px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.header-titles h1 {
+  font-size: 2.2rem;
+  margin: 0 0 0.5rem 0;
+  color: #0f172a;
+}
+
+.header-titles p {
+  margin: 0;
+  color: #64748b;
+  font-size: 1.05rem;
+}
+
+/* Botones Cabecera */
+.header-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 0.7rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  height: fit-content;
+}
+
+.btn-primary {
+  background-color: #6c9975;
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #5a8262;
+}
+
+.btn-secondary {
+  background-color: white;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+
+.btn-secondary:hover {
+  background-color: #f1f5f9;
+}
+
+/* --- TARJETA Y PESTAÑAS --- */
+.table-card {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  width: 100%;
+  max-width: 1100px;
+}
+
+.table-tabs {
+  display: flex;
+  justify-content: flex-start;
+  gap: 2rem;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0 1.5rem;
+}
+
+.tab {
+  background: none;
+  border: none;
+  padding: 1.2rem 0;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+  font-size: 1rem;
+  width: auto;
+}
+
+.tab:hover {
+  color: #1e293b;
+}
+
+.tab.active {
+  color: #6c9975;
+  border-bottom: 3px solid #6c9975;
+}
+
+/* --- TABLA MODERNA --- */
+.table-responsive {
+  padding: 0 1.5rem 1.5rem 1.5rem;
+  overflow-x: auto;
+}
+
+.modern-table {
   width: 100%;
   border-collapse: collapse;
-  margin: 20px 0;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 1rem;
 }
 
-.cursos-table th,
-.cursos-table td {
-  padding: 12px;
-  text-align: left;
-  font-size: 16px;
-  border: 1px solid #ddd;
-  word-wrap: break-word;
-  white-space: nowrap; /* Evita saltos innecesarios */
+.modern-table th,
+.modern-table td {
+  border: none !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  background-color: transparent !important;
+  padding: 1.2rem 1rem;
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
 }
 
-.cursos-table th {
-  background-color: #f8f9fa;
-  color: #333;
+.modern-table th {
+  padding: 1rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #64748b;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid #e2e8f0 !important;
+}
+
+.modern-table td {
+  color: #334155;
 }
 
 .clicable-row {
   cursor: pointer;
-  transition:
-    background-color 0.3s ease,
-    font-weight 0.3s ease;
+  transition: background-color 0.2s ease;
 }
 
 .clicable-row:hover {
-  background-color: #e6f7ff;
-  font-weight: bold;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #f8fafc !important;
 }
 
-.toggle-inactive-courses {
-  padding: 10px;
-  margin-top: 20px;
-  border-top: 1px solid #ddd;
-  color: #0056a4;
-  font-size: 18px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 5px;
+.fw-bold {
+  font-weight: 600;
+  color: #0f172a;
 }
 
-.toggle-inactive-courses:hover {
-  text-decoration: underline;
+/* Empty state */
+.empty-state {
+  padding: 3rem;
+  text-align: center;
+  color: #64748b;
+  font-size: 1rem;
 }
 
-.buttons-container {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+/* --- BADGES --- */
+.badge {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 6px;
+  display: inline-block;
+  text-align: center;
+  min-width: 20px;
 }
 
-.create-course-button {
-  background-color: #2846a7;
-  color: white;
-  border: none;
-  padding: 8px 10px;
-  font-size: 22px;
-  cursor: pointer;
-  border-radius: 4px;
-  transition:
-    background-color 0.3s ease,
-    transform 0.2s;
+.badge-students {
+  background-color: #e2e8f0;
+  color: #334155;
+}
+.badge-teams {
+  background-color: #dcfce7;
+  color: #166534;
+}
+.badge-warning {
+  background-color: #fef08a;
+  color: #854d0e;
+}
+.badge-success {
+  background-color: #f1f5f9;
+  color: #94a3b8;
 }
 
-.create-course-button:hover {
-  background-color: #2040a7;
-  transform: scale(1.02);
-}
-.add-professor-button {
-  background-color: #28a745;
-  color: white;
-  border: none;
-  padding: 8px 10px;
-  font-size: 22px;
-  cursor: pointer;
-  border-radius: 4px;
-  transition:
-    background-color 0.3s ease,
-    transform 0.2s;
-}
-
-.add-professor-button:hover {
-  background-color: #218838;
-  transform: scale(1.02);
-}
-
+/* --- POPUPS --- */
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -138,58 +228,107 @@ html {
 
 .popup {
   background: white;
-  padding: 20px;
-  border-radius: 8px;
+  padding: 2rem;
+  border-radius: 12px;
   text-align: center;
-  max-width: 400px;
+  max-width: 450px;
   width: 90%;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 .popup h2 {
-  margin-bottom: 1rem;
-  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #0f172a;
+  font-size: 1.4rem;
 }
 
 .popup .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
+  text-align: left;
+}
+
+.popup .form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #334155;
+  font-weight: 600;
+  font-size: 0.95rem;
 }
 
 .popup input {
   width: 100%;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 16px;
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.popup input:focus {
+  outline: none;
+  border-color: #6c9975;
+}
+
+.popup .buttons-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 1.5rem;
 }
 
 .popup-button {
-  padding: 8px 12px;
+  padding: 0.6rem 1.2rem;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 16px;
-  margin: 0 5px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  background-color: #6c9975;
+  color: white;
+  transition: background-color 0.2s;
+}
+
+.popup-button:hover {
+  background-color: #5a8262;
 }
 
 .popup-button.cancel {
-  background-color: #dc3545;
-  color: white;
+  background-color: white;
+  color: #475569;
+  border: 1px solid #cbd5e1;
 }
 
 .popup-button.cancel:hover {
-  background-color: #c82333;
+  background-color: #f1f5f9;
 }
 
-/* Responsividad */
+/* --- RESPONSIVIDAD --- */
 @media (max-width: 768px) {
   .cursos-page .content {
-    padding: 10px;
+    padding: 1rem;
   }
 
-  .cursos-table th,
-  .cursos-table td {
-    padding: 8px;
-    font-size: 14px;
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    flex: 1;
+    text-align: center;
+  }
+
+  .modern-table th,
+  .modern-table td {
+    padding: 0.8rem 0.5rem;
+    font-size: 0.85rem;
   }
 }
