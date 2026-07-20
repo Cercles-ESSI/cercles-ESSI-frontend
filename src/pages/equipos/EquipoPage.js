@@ -36,7 +36,7 @@ const COLORS = [
   '#E76F51',
   '#2A9D8F',
   '#264653',
-  '#A8DADH',
+  '#A8DADC',
   '#457B9D',
   '#E9C46A',
   '#F4A3B3',
@@ -91,8 +91,6 @@ const EquipoPage = () => {
       try {
         setLoading(true);
         const equipoData = await getEquipoDetalle(id, token);
-        console.log('data ', equipoData);
-
         setEquipo(equipoData);
         const estudiantesIds = equipoData.estudiantes.map(
           (estudiante) => estudiante.id,
@@ -116,15 +114,12 @@ const EquipoPage = () => {
       try {
         if (!isProfesor) {
           const evaluacionData = await isEvaluacionActiva(equipo.id, token);
-          console.log('Evaluación activa:', evaluacionData);
           const evaluacionId = await getEvaluacionActivaId(equipo.id, token);
           const realizada = await isEvaluacionRealizada(
             idEstudiante,
             evaluacionId,
             token,
           );
-          console.log('Evaluación activa:', evaluacionData);
-          console.log('Evaluación realizada:', realizada);
 
           setEvaluacionActiva(evaluacionData);
           setEvaluacionRealizada(realizada);
@@ -137,10 +132,9 @@ const EquipoPage = () => {
     fetchEvaluacionStatus();
   }, [equipo]);
 
-  // Validar la organización
   const handleValidateGitOrg = async () => {
     try {
-      setComprobandoValidacion(true); // Activar la validación
+      setComprobandoValidacion(true);
       const resultados = await validarOrganizacion(
         equipo.evaluadorId,
         equipo.estudiantes.map((miembro) => miembro.id),
@@ -155,7 +149,6 @@ const EquipoPage = () => {
     }
   };
 
-  // Confirmar la organización si todos los checks son correctos
   const handleConfirmGitOrg = async () => {
     try {
       await confirmarOrganizacion(equipo.id, gitOrgUrl, token);
@@ -168,10 +161,9 @@ const EquipoPage = () => {
     }
   };
 
-  // Validar proyecto
   const handleValidateTaiga = async () => {
     try {
-      setComprobandoValidacionT(true); // Activar la validación
+      setComprobandoValidacionT(true);
       const resultados = await validarProyecto(
         equipo.evaluadorId,
         equipo.estudiantes.map((miembro) => miembro.id),
@@ -194,11 +186,9 @@ const EquipoPage = () => {
       }
     } catch (error) {
       setError('Error al validar el projecte.');
-      //setComprobandoValidacionT(false);
     }
   };
 
-  // Confirmar el proyecto si todos los checks son correctos
   const handleConfirmTaiga = async () => {
     try {
       await confirmarProyecto(equipo.id, TaigaUrl, token);
@@ -211,7 +201,6 @@ const EquipoPage = () => {
     }
   };
 
-  //desconectar org
   const handleConfirmDisconnect = async () => {
     try {
       await disconnectOrganizacion(equipo.id, token);
@@ -219,12 +208,10 @@ const EquipoPage = () => {
       setEquipo((prev) => ({ ...prev, gitOrganizacion: null }));
       alert('Organització de GitHub desconnectada correctament.');
     } catch (error) {
-      console.error('Error al desconnectar la organització:', error);
       alert('Error al desconnectar la organització.');
     }
   };
 
-  //desconectar prj
   const handleConfirmDisconnectTaiga = async () => {
     try {
       await disconnectProyecto(equipo.id, token);
@@ -235,17 +222,14 @@ const EquipoPage = () => {
       setValidationResultsT(null);
       setComprobandoValidacionT(false);
     } catch (error) {
-      console.error('Error al desconnectar el projecte:', error);
       alert('Error al desconnectar el projecte.');
     }
   };
 
   const handleBackClick = () => {
     if (localStorage.getItem('rol') === 'Profesor') {
-      console.log('si');
       navigate(`/cursos/${equipo.cursoId}`);
     } else {
-      console.log('no');
       navigate('/equipos');
     }
   };
@@ -290,13 +274,11 @@ const EquipoPage = () => {
 
   const handleAddMember = (estudianteId) => {
     if (miembrosSeleccionados.includes(estudianteId)) {
-      // Si ya está seleccionado, deseleccionarlo
       setMiembrosAAgregar((prev) => prev.filter((id) => id !== estudianteId));
       setMiembrosSeleccionados((prev) =>
         prev.filter((id) => id !== estudianteId),
       );
     } else {
-      // Si no está seleccionado, añadirlo
       setMiembrosAAgregar((prev) => [...prev, estudianteId]);
       setMiembrosSeleccionados((prev) => [...prev, estudianteId]);
     }
@@ -304,13 +286,11 @@ const EquipoPage = () => {
 
   const handleRemoveMember = (estudianteId) => {
     if (miembrosSeleccionados.includes(estudianteId)) {
-      // Si ya está seleccionado, deseleccionarlo
       setMiembrosAEliminar((prev) => prev.filter((id) => id !== estudianteId));
       setMiembrosSeleccionados((prev) =>
         prev.filter((id) => id !== estudianteId),
       );
     } else {
-      // Si no está seleccionado, añadirlo
       setMiembrosAEliminar((prev) => [...prev, estudianteId]);
       setMiembrosSeleccionados((prev) => [...prev, estudianteId]);
     }
@@ -346,31 +326,30 @@ const EquipoPage = () => {
       setEquipo(equipoData);
     } catch (error) {
       setError('Error al guardar los cambios.');
-      console.error(error);
     } finally {
       setShowConfirmChangesPopup(false);
     }
   };
 
-  if (loading) {
-    return <div>Carregant detalls de l&apos;equip...</div>;
-  }
+  if (loading)
+    return (
+      <div className="loading-state">Carregant detalls de l&apos;equip...</div>
+    );
 
-  //if (error) {
-  //  return <div className="error-message">{error}</div>;
-  //}
-
-  if (!equipo) {
-    return <div>No s&apos;ha trobat la informació de l&apos;equip.</div>;
-  }
+  if (!equipo)
+    return (
+      <div className="loading-state">
+        No s&apos;ha trobat la informació de l&apos;equip.
+      </div>
+    );
 
   if (!equipo.activo) {
     return (
       <div className="inactive-overlay">
         <Sidebar />
-        <div className="inactive-popup">
+        <div className="inactive-popup modern-card">
           <h2>Els curs al que pertany aquest equip ja no està disponible.</h2>
-          <button className="equipos-back-button" onClick={handleBackClick}>
+          <button className="btn-primary" onClick={handleBackClick}>
             Torna enrere
           </button>
         </div>
@@ -382,337 +361,301 @@ const EquipoPage = () => {
     <div className="equipo-page">
       <Sidebar />
       <div className="equipo-content">
-        <button className="equipos-back-button" onClick={handleBackClick}>
-          Torna enrere
-        </button>
-        <h1 className="equipo-title">{equipo.nombre}</h1>
+        {/* --- CABECERA MODERNIZADA --- */}
+        <div className="page-header">
+          <div className="header-left">
+            <button className="btn-back" onClick={handleBackClick}>
+              ← Torna enrere
+            </button>
+            <h1 className="equipo-title">{equipo.nombre}</h1>
+            <div className="equipo-subtitle">
+              <span className="badge badge-curso">
+                {equipo.nombreAsignatura} ({equipo.añoInicio})
+              </span>
+              <span className="badge badge-quadrimestre">
+                {equipo.cuatrimestre === 1
+                  ? 'Q1 - Tardor'
+                  : equipo.cuatrimestre === 2
+                    ? 'Q2 - Primavera'
+                    : 'Desconegut'}
+              </span>
+            </div>
+          </div>
 
-        <div className="action-buttons">
-          <button
-            className="delete-button"
-            onClick={() => {
-              setPopupAction('borrar');
-              setShowPopup(true);
-            }}
-          >
-            Esborrar equip
-          </button>
-          {!isProfesor && (
+          <div className="header-actions">
             <button
-              className="leave-button"
+              className="btn-danger"
               onClick={() => {
-                setPopupAction('salir');
+                setPopupAction('borrar');
                 setShowPopup(true);
               }}
             >
-              Sortir d&apos;aquest equip
+              Esborrar equip
             </button>
-          )}
-        </div>
-
-        <div className="equipo-info">
-          <div className="equipo-info-content">
-            <p>
-              <strong>Curs:</strong> {equipo.nombreAsignatura} (
-              {equipo.añoInicio})
-            </p>
-            <p>
-              <strong>Quadrimestre:</strong>{' '}
-              {equipo.cuatrimestre === 1
-                ? 'Tardor'
-                : equipo.cuatrimestre === 2
-                  ? 'Primavera'
-                  : 'Desconegut'}
-            </p>
+            {!isProfesor && (
+              <button
+                className="btn-warning"
+                onClick={() => {
+                  setPopupAction('salir');
+                  setShowPopup(true);
+                }}
+              >
+                Sortir d&apos;aquest equip
+              </button>
+            )}
           </div>
         </div>
-        <div className="equipo-section">
-          {isProfesor ? (
-            <>
-              <div className="metrics-links-container">
-                {/* Link a métricas de GitHub */}
-                {equipo.gitOrganizacion ? (
-                  <>
-                    <Link
-                      to={`/equipo/${id}/datos_generales?org=${equipo.gitOrganizacion}&estudiantesIds=${estIds.join(',')}`}
-                      className="metrics-link"
-                    >
-                      📊 DADES GENERALS DE L&apos;EQUIP
-                    </Link>
 
-                    <Link
-                      to={`/equipo/${equipo.id}/datos_historicos`}
-                      className="metrics-link"
-                    >
-                      📊 HISTORIAL DE DADES DE L&apos;EQUIP
-                    </Link>
-
-                    <Link
-                      to={`/equipo/${id}/metrics?org=${equipo.gitOrganizacion}&estudiantesIds=${estIds.join(',')}`}
-                      className="metrics-link"
-                    >
-                      📊 Veure detalls de les mètriques de GitHub
-                    </Link>
-                  </>
-                ) : (
-                  <>
-                    <div className="metrics-link-disabled">
-                      📊 DADES GENERALS DE L&apos;EQUIP
-                      <span className="disabled-message">
-                        Aquest equip encara no ha configurat la seva
-                        organització de Github, per tant no pots veure les dades
-                        generals de l&apos;equip.
-                      </span>
-                    </div>
-                    <div className="metrics-link-disabled">
-                      📊 Veure detalls de les mètriques de codi
-                      <span className="disabled-message">
-                        Aquest equip encara no ha configurat la seva
-                        organització de Github, per tant no hi ha dades a veure.
-                      </span>
-                    </div>
-                  </>
-                )}
-
-                {/* Bloque para GITHUB */}
-                {equipo.gestionTareas === 'GitHub' &&
-                  (equipo.gitOrganizacion ? (
-                    <Link
-                      to={`/equipo/${id}/github-metrics?org=${equipo.gitOrganizacion}&estudiantesIds=${estIds.join(',')}`}
-                      className="metrics-link"
-                    >
-                      📊 Veure mètriques de gestió de tasques (GitHub)
-                    </Link>
-                  ) : (
-                    <div className="metrics-link-disabled">
-                      📊 Veure mètriques de gestió de tasques (GitHub)
-                      <span className="disabled-message">
-                        Aquest equip encara no ha configurat la seva
-                        organització de GitHub, per tant no hi ha dades a veure.
-                      </span>
-                    </div>
-                  ))}
-
-                {/* Bloque para TAIGA */}
-                {equipo.gestionTareas === 'Taiga' &&
-                  (equipo.taigaProyecto ? (
-                    <Link
-                      to={`/equipo/${id}/taiga-metrics?project=${equipo.taigaProyecto}`}
-                      className="metrics-link"
-                    >
-                      📊 Veure mètriques de gestió de tasques (Taiga)
-                    </Link>
-                  ) : (
-                    <div className="metrics-link-disabled">
-                      📊 Veure mètriques de gestió de tasques (Taiga)
-                      <span className="disabled-message">
-                        Aquest equip encara no ha configurat el seu projecte de
-                        Taiga, per tant no hi ha dades a veure.
-                      </span>
-                    </div>
-                  ))}
-                {/* Link a dades d'avaluacions */}
-                <Link
-                  to={`/equipo/${id}/evaluaciones_generales`}
-                  className="metrics-link"
-                >
-                  📊 Veure detalls de les dades d&apos;avaluacions
-                </Link>
-              </div>
-            </>
-          ) : (
-            <>
-              {/* Link de evaluación para estudiantes */}
-              {evaluacionActiva?.activa && !evaluacionRealizada ? (
-                <div className="evaluacion-container">
+        {/* --- PANEL DE MÉTRICAS (PROFESOR) --- */}
+        {isProfesor && (
+          <div className="modern-card metrics-card">
+            <h2>Mètriques i Avaluacions</h2>
+            <div className="metrics-grid">
+              {equipo.gitOrganizacion ? (
+                <>
                   <Link
-                    to={`/equipo/${equipo.id}/evaluacion`}
-                    className="evaluacion-link"
+                    to={`/equipo/${id}/datos_generales?org=${equipo.gitOrganizacion}&estudiantesIds=${estIds.join(',')}`}
+                    className="metric-box"
                   >
-                    Avalua als teus companys
+                    <span className="icon">📊</span>
+                    <div className="metric-text">
+                      <h3>Dades Generals</h3>
+                      <p>Resum general de l&apos;equip</p>
+                    </div>
                   </Link>
-                  <p className="evaluacion-info">
-                    Tens fins el{' '}
-                    <strong>
-                      {evaluacionActiva.fechaFin
-                        ? format(
-                            new Date(evaluacionActiva.fechaFin),
-                            "d 'de' MMMM 'de' yyyy",
-                            {
-                              locale: ca,
-                            },
-                          )
-                        : ''}
-                    </strong>{' '}
-                    per fer aquesta avaluació al teu equip.
-                  </p>
-                </div>
+                  <Link
+                    to={`/equipo/${equipo.id}/datos_historicos`}
+                    className="metric-box"
+                  >
+                    <span className="icon">📈</span>
+                    <div className="metric-text">
+                      <h3>Historial</h3>
+                      <p>Historial de dades de l&apos;equip</p>
+                    </div>
+                  </Link>
+                  <Link
+                    to={`/equipo/${id}/metrics?org=${equipo.gitOrganizacion}&estudiantesIds=${estIds.join(',')}`}
+                    className="metric-box"
+                  >
+                    <span className="icon">💻</span>
+                    <div className="metric-text">
+                      <h3>Codi (GitHub)</h3>
+                      <p>Detalls de les mètriques de codi</p>
+                    </div>
+                  </Link>
+                </>
               ) : (
-                <span className="evaluacion-link-disabled">
-                  No hi ha avaluacions actives
-                </span>
+                <div className="metric-box disabled">
+                  <span className="icon">⚠️</span>
+                  <div className="metric-text">
+                    <h3>Mètriques de Codi Inactives</h3>
+                    <p>
+                      L&apos;equip no ha configurat l&apos;organització de
+                      GitHub.
+                    </p>
+                  </div>
+                </div>
               )}
-            </>
-          )}
-        </div>
 
-        {!isProfesor && (
-          <div className="equipo-section">
-            <Link
-              to={`/equipo/${equipo.id}/les_meves_avaluacions`}
-              className="metrics-link"
-            >
-              📝 Veure la meva autoavaluació
-            </Link>
+              {equipo.gestionTareas === 'GitHub' && equipo.gitOrganizacion && (
+                <Link
+                  to={`/equipo/${id}/github-metrics?org=${equipo.gitOrganizacion}&estudiantesIds=${estIds.join(',')}`}
+                  className="metric-box"
+                >
+                  <span className="icon">📋</span>
+                  <div className="metric-text">
+                    <h3>Tasques (GitHub)</h3>
+                    <p>Gestió de tasques via GitHub</p>
+                  </div>
+                </Link>
+              )}
+
+              {equipo.gestionTareas === 'Taiga' && equipo.taigaProyecto && (
+                <Link
+                  to={`/equipo/${id}/taiga-metrics?project=${equipo.taigaProyecto}`}
+                  className="metric-box"
+                >
+                  <span className="icon">🎯</span>
+                  <div className="metric-text">
+                    <h3>Tasques (Taiga)</h3>
+                    <p>Gestió de tasques via Taiga</p>
+                  </div>
+                </Link>
+              )}
+
+              <Link
+                to={`/equipo/${id}/evaluaciones_generales`}
+                className="metric-box highlight"
+              >
+                <span className="icon">📝</span>
+                <div className="metric-text">
+                  <h3>Avaluacions</h3>
+                  <p>Detalls de les dades d&apos;avaluacions</p>
+                </div>
+              </Link>
+            </div>
           </div>
         )}
 
-        {/* Organización GitHub */}
-        <div className="equipo-section">
-          <h2>Organització de GitHub</h2>
+        {/* --- PANEL DE EVALUACIÓN (ESTUDIANTE) --- */}
+        {!isProfesor && (
+          <div className="modern-card">
+            <h2>Avaluacions</h2>
+            <div className="evaluacion-estudiante-container">
+              {evaluacionActiva?.activa && !evaluacionRealizada ? (
+                <div className="evaluacion-banner active">
+                  <div className="eval-info">
+                    <h3>Avalua als teus companys</h3>
+                    <p>
+                      Tens fins el{' '}
+                      <strong>
+                        {evaluacionActiva.fechaFin
+                          ? format(
+                              new Date(evaluacionActiva.fechaFin),
+                              "d 'de' MMMM 'de' yyyy",
+                              { locale: ca },
+                            )
+                          : ''}
+                      </strong>{' '}
+                      per fer-ho.
+                    </p>
+                  </div>
+                  <Link
+                    to={`/equipo/${equipo.id}/evaluacion`}
+                    className="btn-primary"
+                  >
+                    Començar Avaluació
+                  </Link>
+                </div>
+              ) : (
+                <p className="text-muted">
+                  No hi ha avaluacions pendents actives en aquest moment.
+                </p>
+              )}
 
+              <div className="my-evaluations-link">
+                <Link
+                  to={`/equipo/${equipo.id}/les_meves_avaluacions`}
+                  className="btn-secondary"
+                >
+                  📝 Veure la meva autoavaluació
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* --- CONFIGURACIÓN GITHUB --- */}
+        <div className="modern-card">
+          <h2>Organització de GitHub</h2>
           {isProfesor ? (
             equipo.gitOrganizacion ? (
-              <>
-                <p>
-                  ✅ L&apos;organització de GitHub està configurada:
-                  <a
-                    href={`https://github.com/${equipo.gitOrganizacion}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="github-org-link"
-                  >
-                    {equipo.gitOrganizacion}
-                  </a>
-                </p>
-              </>
+              <p className="status-success">
+                ✅ Configuració activa:{' '}
+                <a
+                  href={`https://github.com/${equipo.gitOrganizacion}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {equipo.gitOrganizacion}
+                </a>
+              </p>
             ) : (
-              <p>
+              <p className="text-muted">
                 Els estudiants encara no han definit la seva organització de
                 GitHub.
               </p>
             )
           ) : (
-            // Vista para estudiantes
             <>
               {equipo.gitOrganizacion ? (
-                // organización ya está configurada
-                <>
+                <div className="config-success-box">
                   <p>
-                    ✅ L&apos;organització de GitHub està configurada:
+                    ✅ Organització activa:{' '}
                     <a
                       href={`https://github.com/${equipo.gitOrganizacion}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="github-org-link"
                     >
                       {equipo.gitOrganizacion}
                     </a>
-                    <button
-                      className="disconnect-button"
-                      onClick={() => setShowDisconnectPopup(true)}
-                    >
-                      Desconnectar organització
-                    </button>
                   </p>
-                </>
+                  <button
+                    className="btn-danger btn-small"
+                    onClick={() => setShowDisconnectPopup(true)}
+                  >
+                    Desconnectar
+                  </button>
+                </div>
               ) : (
-                // Si la organización aún no está configurada
-                <>
+                <div className="config-setup-box">
                   {!comprobandoValidacion ? (
                     <>
-                      <p>
-                        Introdueix la URL de l&apos;organització de GitHub del
-                        teu equip. Assegura&apos;t de que el perfil de
-                        <strong> {equipo.githubAsignatura}</strong> n&apos;és
-                        membre i que té permisos d&apos;<strong>Owner</strong>.
+                      <p className="config-instructions">
+                        Introdueix la URL de l&apos;organització. El perfil{' '}
+                        <strong>{equipo.githubAsignatura}</strong> n&apos;ha de
+                        ser membre amb permisos d&apos;<strong>Owner</strong>.
                       </p>
-                      <input
-                        type="text"
-                        placeholder="https://github.com/organització"
-                        value={gitOrgUrl}
-                        onChange={(e) => setGitOrgUrl(e.target.value)}
-                        className="git-org-input-field"
-                      />
-                      <button
-                        onClick={handleValidateGitOrg}
-                        className="validate-git-org-button"
-                        disabled={!gitOrgUrl}
-                      >
-                        Validar
-                      </button>
+                      <div className="input-group">
+                        <input
+                          type="text"
+                          placeholder="https://github.com/organitzacio"
+                          value={gitOrgUrl}
+                          onChange={(e) => setGitOrgUrl(e.target.value)}
+                          className="form-input"
+                        />
+                        <button
+                          onClick={handleValidateGitOrg}
+                          className="btn-primary"
+                          disabled={!gitOrgUrl}
+                        >
+                          Validar
+                        </button>
+                      </div>
                     </>
                   ) : (
-                    <>
-                      {/* Checklist de validación */}
-                      <div className="validation-results">
-                        <p>
-                          {validationResults?.professoratEsMiembro ? (
-                            <>
-                              ✅ L&apos;usuari{' '}
-                              <strong>{equipo.githubAsignatura}</strong> és
-                              membre de l&apos;organització.
-                            </>
-                          ) : (
-                            <>
-                              ❌ L&apos;usuari{' '}
-                              <strong>{equipo.githubAsignatura}</strong> no és
-                              membre de l&apos;organització.
-                            </>
-                          )}
-                        </p>
-
-                        <p>
-                          {validationResults?.professoratEsAdmin ? (
-                            <>
-                              ✅ L&apos;usuari{' '}
-                              <strong>{equipo.githubAsignatura}</strong> té
-                              permisos d&apos;owner en l&apos;organització.
-                            </>
-                          ) : (
-                            <>
-                              ❌ L&apos;usuari{' '}
-                              <strong>{equipo.githubAsignatura}</strong> no té
-                              permisos d&apos;owner en l&apos;organització.
-                            </>
-                          )}
-                        </p>
-
-                        <p>
+                    <div className="validation-results">
+                      <ul className="checklist">
+                        <li>
+                          {validationResults?.professoratEsMiembro
+                            ? '✅'
+                            : '❌'}{' '}
+                          L&apos;usuari {equipo.githubAsignatura} és membre.
+                        </li>
+                        <li>
+                          {validationResults?.professoratEsAdmin ? '✅' : '❌'}{' '}
+                          L&apos;usuari {equipo.githubAsignatura} té permisos
+                          d&apos;owner.
+                        </li>
+                        <li>
                           {validationResults?.todosUsuariosGitConfigurados
-                            ? '✅ Tots els membres tenen un compte de GitHub associat.'
-                            : '❌ No tots els membres tenen un compte de GitHub associat.'}
-                        </p>
-                        <p>
+                            ? '✅'
+                            : '❌'}{' '}
+                          Tots els membres tenen compte de GitHub.
+                        </li>
+                        <li>
                           {validationResults?.todosMiembrosEnOrganizacion
-                            ? "✅ Tots els membres pertanyen a l'organització."
-                            : "❌ No tots els membres pertanyen a l'organització."}
-                        </p>
-                        <p>
+                            ? '✅'
+                            : '❌'}{' '}
+                          Tots els membres pertanyen a l&apos;organització.
+                        </li>
+                        <li>
                           {validationResults?.profesorEnOrganizacion
-                            ? "✅ El professor pertany a l'organització."
-                            : "❌ El professor no pertany a l'organització."}
-                        </p>
-                        {/* Botón para reintroducir la organización si hay problemas */}
+                            ? '✅'
+                            : '❌'}{' '}
+                          El professor pertany a l&apos;organització.
+                        </li>
+                      </ul>
+
+                      <div className="validation-actions">
                         {validationResults?.professoratEsMiembro &&
                         validationResults?.professoratEsAdmin &&
                         validationResults?.todosUsuariosGitConfigurados &&
                         validationResults?.todosMiembrosEnOrganizacion &&
                         validationResults?.profesorEnOrganizacion ? (
                           <button
-                            onClick={async () => {
-                              try {
-                                await handleConfirmGitOrg();
-                                alert(
-                                  "L'organització s'ha confirmat correctament! Actualitzant vista...",
-                                );
-                              } catch (error) {
-                                setError(
-                                  "Hi ha hagut un error al confirmar l'organització.",
-                                );
-                              }
-                            }}
-                            className="confirm-git-org-button"
+                            onClick={handleConfirmGitOrg}
+                            className="btn-success"
                           >
                             Confirmar organització
                           </button>
@@ -720,12 +663,12 @@ const EquipoPage = () => {
                           <>
                             <button
                               onClick={handleValidateGitOrg}
-                              className="validate-git-org-button"
+                              className="btn-primary"
                             >
-                              Torna a validar l&apos;organització de GitHub
+                              Torna a validar
                             </button>
                             <button
-                              className="error-message-button"
+                              className="btn-secondary"
                               onClick={() => setComprobandoValidacion(false)}
                             >
                               Torna enrere
@@ -733,358 +676,357 @@ const EquipoPage = () => {
                           </>
                         )}
                       </div>
-                    </>
+                    </div>
                   )}
-                </>
+                </div>
               )}
             </>
           )}
         </div>
+
+        {/* --- CONFIGURACIÓN TAIGA --- */}
         {equipo.gestionTareas === 'Taiga' && (
-          <div className="equipo-section">
+          <div className="modern-card">
             <h2>Projecte de Taiga</h2>
             {isProfesor ? (
               equipo.taigaProyecto ? (
-                <>
-                  <p>
-                    ✅ El projecte de Taiga està configurat:
-                    <a
-                      href={`https://taiga.com/${equipo.taigaProyecto}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="github-org-link"
-                    >
-                      {equipo.taigaProyecto}
-                    </a>
-                  </p>
-                </>
+                <p className="status-success">
+                  ✅ Projecte actiu:{' '}
+                  <a
+                    href={`https://taiga.com/${equipo.taigaProyecto}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {equipo.taigaProyecto}
+                  </a>
+                </p>
               ) : (
-                <p>
+                <p className="text-muted">
                   Els estudiants encara no han definit el seu projecte de Taiga.
                 </p>
               )
             ) : (
-              // Vista para estudiantes
               <>
                 {equipo.taigaProyecto ? (
-                  // organización ya está configurada
-                  <>
+                  <div className="config-success-box">
                     <p>
-                      ✅ El projecte de Taiga està configurat:
+                      ✅ Projecte actiu:{' '}
                       <a
                         href={`https://taiga.com/${equipo.taigaProyecto}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="github-org-link"
                       >
                         {equipo.taigaProyecto}
                       </a>
-                      <button
-                        className="disconnect-button"
-                        onClick={() => setShowDisconnectPopupTaiga(true)}
-                      >
-                        Desconnectar projecte
-                      </button>
                     </p>
-                  </>
+                    <button
+                      className="btn-danger btn-small"
+                      onClick={() => setShowDisconnectPopupTaiga(true)}
+                    >
+                      Desconnectar
+                    </button>
+                  </div>
                 ) : (
-                  // Si la organización aún no está configurada
-                  <>
+                  <div className="config-setup-box">
                     {!comprobandoValidacionT ? (
                       <>
-                        {error && (
-                          <div className="error-message-inline">{error}</div>
-                        )}
-                        <p>
-                          Introdueix la URL del projecte de Taiga del teu equip.
-                          Assegura&apos;t de que el perfil del professor
-                          <strong> {equipo.taigaUserProf}</strong> n&apos;és
-                          membre i que el projecte es <strong>públic</strong>.
+                        {error && <div className="error-banner">{error}</div>}
+                        <p className="config-instructions">
+                          Introdueix la URL del projecte públic. El perfil{' '}
+                          <strong>{equipo.taigaUserProf}</strong> n&apos;ha de
+                          ser membre.
                         </p>
-                        <input
-                          type="text"
-                          placeholder="https://taiga.com/project/nom-projecte"
-                          value={TaigaUrl}
-                          onChange={(e) => setTaigaUrl(e.target.value)}
-                          className="git-org-input-field"
-                        />
-                        <button
-                          onClick={handleValidateTaiga}
-                          className="validate-git-org-button"
-                          disabled={!TaigaUrl}
-                        >
-                          Validar
-                        </button>
+                        <div className="input-group">
+                          <input
+                            type="text"
+                            placeholder="https://taiga.com/project/nom-projecte"
+                            value={TaigaUrl}
+                            onChange={(e) => setTaigaUrl(e.target.value)}
+                            className="form-input"
+                          />
+                          <button
+                            onClick={handleValidateTaiga}
+                            className="btn-primary"
+                            disabled={!TaigaUrl}
+                          >
+                            Validar
+                          </button>
+                        </div>
                       </>
                     ) : (
                       <div className="validation-results">
-                        <p>
-                          {validationResultsT?.professoratEsMiembroT ? (
-                            <>
-                              ✅ L&apos;usuari{' '}
-                              <strong>{equipo.taigaUserProf} </strong>
-                              és membre del projecte.
-                            </>
+                        <ul className="checklist">
+                          <li>
+                            {validationResultsT?.professoratEsMiembroT
+                              ? '✅'
+                              : '❌'}{' '}
+                            L&apos;usuari {equipo.taigaUserProf} és membre.
+                          </li>
+                          <li>
+                            {validationResultsT?.todosUsuariosTaigaConfigurados
+                              ? '✅'
+                              : '❌'}{' '}
+                            Tots els membres tenen compte de Taiga.
+                          </li>
+                          <li>
+                            {validationResultsT?.todosMiembrosEnProyecto
+                              ? '✅'
+                              : '❌'}{' '}
+                            Tots els membres pertanyen al projecte.
+                          </li>
+                          <li>
+                            {validationResultsT?.proyectoPublico ? '✅' : '❌'}{' '}
+                            El projecte és públic.
+                          </li>
+                        </ul>
+                        <div className="validation-actions">
+                          {validationResultsT?.professoratEsMiembroT &&
+                          validationResultsT?.todosUsuariosTaigaConfigurados &&
+                          validationResultsT?.todosMiembrosEnProyecto &&
+                          validationResultsT?.proyectoPublico ? (
+                            <button
+                              onClick={handleConfirmTaiga}
+                              className="btn-success"
+                            >
+                              Confirmar projecte
+                            </button>
                           ) : (
                             <>
-                              ❌ L&apos;usuari{' '}
-                              <strong>{equipo.taigaUserProf} </strong>
-                              no és membre del projecte.
+                              <button
+                                onClick={handleValidateTaiga}
+                                className="btn-primary"
+                              >
+                                Torna a validar
+                              </button>
+                              <button
+                                className="btn-secondary"
+                                onClick={() => setComprobandoValidacionT(false)}
+                              >
+                                Torna enrere
+                              </button>
                             </>
                           )}
-                        </p>
-
-                        <p>
-                          {validationResultsT?.todosUsuariosTaigaConfigurados
-                            ? '✅ Tots els membres tenen un compte de Taiga associat.'
-                            : '❌ No tots els membres tenen un compte de Taiga associat.'}
-                        </p>
-                        <p>
-                          {validationResultsT?.todosMiembrosEnProyecto
-                            ? '✅ Tots els membres pertanyen al projecte de Taiga.'
-                            : '❌ No tots els membres pertanyen al projecte de Taiga.'}
-                        </p>
-                        <p>
-                          {validationResultsT?.proyectoPublico
-                            ? '✅ El projecte és públic.'
-                            : '❌ El projecte és privat.'}
-                        </p>
-                        {validationResultsT?.professoratEsMiembroT &&
-                        validationResultsT?.todosUsuariosTaigaConfigurados &&
-                        validationResultsT?.todosMiembrosEnProyecto &&
-                        validationResultsT?.proyectoPublico ? (
-                          <button
-                            onClick={async () => {
-                              try {
-                                await handleConfirmTaiga();
-                                alert('Confirmat!');
-                              } catch (error) {
-                                setError('Error.');
-                              }
-                            }}
-                            className="confirm-git-org-button"
-                          >
-                            Confirmar organització
-                          </button>
-                        ) : (
-                          <>
-                            {error && (
-                              <div className="error-message-inline">
-                                {error}
-                              </div>
-                            )}
-                            <button
-                              onClick={handleValidateTaiga}
-                              className="validate-git-org-button"
-                            >
-                              Torna a validar
-                            </button>
-                            <button
-                              className="error-message-button"
-                              onClick={() => setComprobandoValidacionT(false)}
-                            >
-                              Torna enrere
-                            </button>
-                          </>
-                        )}
+                        </div>
                       </div>
                     )}
-                  </>
+                  </div>
                 )}
               </>
             )}
           </div>
         )}
 
-        <div className="equipo-section">
-          <h2>Membres de l&apos;equip</h2>
+        {/* --- MIEMBROS DEL EQUIPO --- */}
+        <div className="modern-card">
+          <div className="section-header">
+            <h2>Membres de l&apos;equip</h2>
+            {!isEditing && (
+              <button
+                className="btn-secondary btn-small"
+                onClick={handleEditToggle}
+              >
+                Modificar membres
+              </button>
+            )}
+          </div>
+
           {isEditing ? (
-            <>
-              <div className="edit-members">
-                <div className="students-list">
+            <div className="edit-members-layout">
+              <div className="members-column">
+                <h3>Equip Actual</h3>
+                <div className="student-list-box">
                   {equipo.estudiantes.map((miembro) => (
-                    <div key={miembro.id} className="student-item">
+                    <div key={miembro.id} className="student-row">
                       <span>{miembro.nombre}</span>
                       <button
-                        className={`remove-member-button ${
-                          miembrosSeleccionados.includes(miembro.id)
-                            ? 'selected'
-                            : ''
-                        }`}
+                        className={`action-icon remove ${miembrosSeleccionados.includes(miembro.id) ? 'selected' : ''}`}
                         onClick={() => handleRemoveMember(miembro.id)}
+                        aria-label="Eliminar membre"
                       >
                         🗑️
                       </button>
                     </div>
                   ))}
                 </div>
+              </div>
 
-                <h2>Estudiants sense equip</h2>
-
+              <div className="members-column">
+                <h3>Estudiants sense equip</h3>
                 <input
                   type="text"
                   placeholder="Cerca un estudiant..."
-                  className="search-input"
+                  className="form-input mb-1"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
-
-                <div className="students-list no-team">
-                  {filteredEstudiantesSinEquipo.map((estudiante) => (
-                    <div key={estudiante.id} className="student-item">
-                      <span>{estudiante.nombre}</span>
-                      <button
-                        className={`add-member-button ${
-                          miembrosSeleccionados.includes(estudiante.id)
-                            ? 'selected'
-                            : ''
-                        }`}
-                        onClick={() => handleAddMember(estudiante.id)}
-                      >
-                        ➕
-                      </button>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="edit-actions">
-                  <button
-                    className="confirm-button"
-                    onClick={handleSaveChanges}
-                  >
-                    Fer canvis
-                  </button>
-                  <button className="cancel-button" onClick={handleEditToggle}>
-                    Cancel·lar
-                  </button>
+                <div className="student-list-box scrollable">
+                  {filteredEstudiantesSinEquipo.length > 0 ? (
+                    filteredEstudiantesSinEquipo.map((estudiante) => (
+                      <div key={estudiante.id} className="student-row">
+                        <span>{estudiante.nombre}</span>
+                        <button
+                          className={`action-icon add ${miembrosSeleccionados.includes(estudiante.id) ? 'selected' : ''}`}
+                          onClick={() => handleAddMember(estudiante.id)}
+                          aria-label="Afegir membre"
+                        >
+                          ➕
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-muted small">
+                      No hi ha estudiants disponibles.
+                    </p>
+                  )}
                 </div>
               </div>
-            </>
+
+              <div className="edit-actions-footer">
+                <button className="btn-secondary" onClick={handleEditToggle}>
+                  Cancel·lar
+                </button>
+                <button className="btn-primary" onClick={handleSaveChanges}>
+                  Desar Canvis
+                </button>
+              </div>
+            </div>
           ) : (
-            <div className="equipo-members">
-              <button
-                className="edit-members-equipo-button"
-                onClick={handleEditToggle}
-              >
-                Modificar membres
-              </button>
+            <div className="members-avatar-grid">
               {equipo.estudiantes.map((estudiante, index) => (
-                <div
-                  key={estudiante.id}
-                  className="member-circle"
-                  style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                >
-                  <i className="fas fa-user member-icon"></i>
-                  <div className="member-details">
-                    <p className="member-name">{estudiante.nombre}</p>
+                <div key={estudiante.id} className="member-avatar">
+                  <div
+                    className="avatar-circle"
+                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                  >
+                    {estudiante.nombre.charAt(0).toUpperCase()}
                   </div>
+                  <span className="avatar-name">{estudiante.nombre}</span>
                 </div>
               ))}
             </div>
           )}
         </div>
 
-        {showPopup && (
-          <div className="confirm-popup">
-            <div className="changes-popup-content">
-              <h>
-                Estas segur/a que vols{' '}
-                {popupAction === 'borrar'
-                  ? 'borrar aquest equip'
-                  : "sortir d'aquest equip"}
-                ?
-              </h>
-              <p className="popup-subtext">
-                {popupAction === 'borrar'
-                  ? "Es perdrà tota la informació d'aquest equip."
-                  : "Perdràs totes les dades d'aquest equip."}
-              </p>
-              <button className="confirm-button" onClick={handlePopupConfirm}>
-                Confirmar
-              </button>
-              <button className="cancel-button" onClick={handlePopupCancel}>
-                Cancel·lar
-              </button>
-            </div>
-          </div>
-        )}
-        {showConfirmChangesPopup && (
-          <div className="confirm-popup">
-            <div className="changes-popup-content">
-              <h>
-                Estàs segur/a que vols fer aquestes modificacions als membres de
-                l&apos;equip?
-              </h>
-              {/* Mensaje de error */}
-              {miembrosAEliminar.length === equipo.estudiantes.length &&
-                miembrosAAgregar.length === 0 && (
-                  <p className="creating-error-message">
-                    No pots eliminar a tots els membres de l&apos;equip i no
-                    afegir-ne a cap. En tot cas, esborra l&apos;equip.
+        {/* --- POPUPS --- */}
+        {(showPopup ||
+          showConfirmChangesPopup ||
+          showDisconnectPopup ||
+          showDisconnectPopupTaiga) && (
+          <div className="popup-overlay">
+            <div className="popup-modern">
+              {showPopup && (
+                <>
+                  <h3>
+                    {popupAction === 'borrar'
+                      ? 'Esborrar equip'
+                      : "Sortir de l'equip"}
+                  </h3>
+                  <p>
+                    Estàs segur/a que vols{' '}
+                    {popupAction === 'borrar'
+                      ? 'esborrar aquest equip'
+                      : "sortir d'aquest equip"}
+                    ?
                   </p>
-                )}
+                  <p className="text-danger small">
+                    Aquesta acció no es pot desfer i es perdrà la informació.
+                  </p>
+                  <div className="popup-actions">
+                    <button
+                      className="btn-secondary"
+                      onClick={handlePopupCancel}
+                    >
+                      Cancel·lar
+                    </button>
+                    <button className="btn-danger" onClick={handlePopupConfirm}>
+                      Confirmar
+                    </button>
+                  </div>
+                </>
+              )}
 
-              <button
-                className="confirm-button"
-                onClick={handleConfirmChanges}
-                disabled={
-                  miembrosAEliminar.length === equipo.estudiantes.length &&
-                  miembrosAAgregar.length === 0
-                } // Deshabilita si la condición es verdadera
-              >
-                Confirmar
-              </button>
-              <button
-                className="cancel-button"
-                onClick={() => setShowConfirmChangesPopup(false)}
-              >
-                Cancel·lar
-              </button>
-            </div>
-          </div>
-        )}
+              {showConfirmChangesPopup && (
+                <>
+                  <h3>Guardar Canvis</h3>
+                  <p>
+                    Estàs segur/a que vols fer aquestes modificacions als
+                    membres de l&apos;equip?
+                  </p>
+                  {miembrosAEliminar.length === equipo.estudiantes.length &&
+                    miembrosAAgregar.length === 0 && (
+                      <p className="text-danger small">
+                        No pots eliminar a tots els membres sense afegir-ne cap.
+                      </p>
+                    )}
+                  <div className="popup-actions">
+                    <button
+                      className="btn-secondary"
+                      onClick={() => setShowConfirmChangesPopup(false)}
+                    >
+                      Cancel·lar
+                    </button>
+                    <button
+                      className="btn-primary"
+                      onClick={handleConfirmChanges}
+                      disabled={
+                        miembrosAEliminar.length ===
+                          equipo.estudiantes.length &&
+                        miembrosAAgregar.length === 0
+                      }
+                    >
+                      Desar canvis
+                    </button>
+                  </div>
+                </>
+              )}
 
-        {showDisconnectPopup && (
-          <div className="confirm-popup">
-            <div className="changes-popup-content">
-              <h>
-                Estàs segur/a que vols desconnectar aquesta organització de
-                GitHub de l&apos;equip?
-              </h>
-              <button
-                className="confirm-button"
-                onClick={handleConfirmDisconnect}
-              >
-                Confirmar
-              </button>
-              <button
-                className="cancel-button"
-                onClick={() => setShowDisconnectPopup(false)}
-              >
-                Cancel·lar
-              </button>
-            </div>
-          </div>
-        )}
-        {showDisconnectPopupTaiga && (
-          <div className="confirm-popup">
-            <div className="changes-popup-content">
-              <h>
-                Segur que vols desvincular aquest projecte de Taiga de
-                l&apos;equip?
-              </h>
-              <button
-                className="confirm-button"
-                onClick={handleConfirmDisconnectTaiga}
-              >
-                Confirmar
-              </button>
-              <button
-                className="cancel-button"
-                onClick={() => setShowDisconnectPopupTaiga(false)}
-              >
-                Cancel·lar
-              </button>
+              {showDisconnectPopup && (
+                <>
+                  <h3>Desconnectar Organització</h3>
+                  <p>
+                    Estàs segur/a que vols desconnectar aquesta organització de
+                    GitHub?
+                  </p>
+                  <div className="popup-actions">
+                    <button
+                      className="btn-secondary"
+                      onClick={() => setShowDisconnectPopup(false)}
+                    >
+                      Cancel·lar
+                    </button>
+                    <button
+                      className="btn-danger"
+                      onClick={handleConfirmDisconnect}
+                    >
+                      Desconnectar
+                    </button>
+                  </div>
+                </>
+              )}
+
+              {showDisconnectPopupTaiga && (
+                <>
+                  <h3>Desconnectar Projecte</h3>
+                  <p>
+                    Segur que vols desvincular aquest projecte de Taiga de
+                    l&apos;equip?
+                  </p>
+                  <div className="popup-actions">
+                    <button
+                      className="btn-secondary"
+                      onClick={() => setShowDisconnectPopupTaiga(false)}
+                    >
+                      Cancel·lar
+                    </button>
+                    <button
+                      className="btn-danger"
+                      onClick={handleConfirmDisconnectTaiga}
+                    >
+                      Desconnectar
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}
