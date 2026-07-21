@@ -1,8 +1,9 @@
 .evaluacion-page {
   display: flex;
   flex-direction: row;
-  font-family: Arial, sans-serif;
-  padding: 90px;
+  padding-left: 260px;
+  min-height: 100vh;
+  justify-content: center;
   background-color: #f8f9fa;
 }
 
@@ -11,13 +12,15 @@
 }
 
 .evaluacion-content {
-  flex: 4;
-  margin: 0 auto; /* Centra el contenido */
-  max-width: 1000px; /* Limita el ancho máximo */
-  padding: 20px;
+  max-width: 1100px;
+  padding: 3rem;
+  margin: 2rem auto;
+  height: fit-content;
   background: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.03);
 }
 
 .evaluacion-content h1 {

@@ -345,13 +345,18 @@ const EquipoPage = () => {
 
   if (!equipo.activo) {
     return (
-      <div className="inactive-overlay">
+      <div className="equipo-page">
         <Sidebar />
-        <div className="inactive-popup modern-card">
-          <h2>Els curs al que pertany aquest equip ja no està disponible.</h2>
-          <button className="btn-primary" onClick={handleBackClick}>
-            Torna enrere
-          </button>
+        <div className="equipo-content inactive-state-container">
+          <div className="modern-card inactive-popup">
+            <h2>El curs al qual pertany aquest equip ja no està disponible.</h2>
+            <p className="text-muted">
+              No pots accedir a les dades d&apos;un equip inactiu.
+            </p>
+            <button className="btn-primary" onClick={handleBackClick}>
+              ← Torna enrere
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -411,6 +416,7 @@ const EquipoPage = () => {
           <div className="modern-card metrics-card">
             <h2>Mètriques i Avaluacions</h2>
             <div className="metrics-grid">
+              {/* MÉTRICAS DE CÓDIGO GENERALES (GITHUB) */}
               {equipo.gitOrganizacion ? (
                 <>
                   <Link
@@ -457,32 +463,56 @@ const EquipoPage = () => {
                 </div>
               )}
 
-              {equipo.gestionTareas === 'GitHub' && equipo.gitOrganizacion && (
-                <Link
-                  to={`/equipo/${id}/github-metrics?org=${equipo.gitOrganizacion}&estudiantesIds=${estIds.join(',')}`}
-                  className="metric-box"
-                >
-                  <span className="icon">📋</span>
-                  <div className="metric-text">
-                    <h3>Tasques (GitHub)</h3>
-                    <p>Gestió de tasques via GitHub</p>
+              {/* GESTIÓN DE TAREAS: GITHUB */}
+              {equipo.gestionTareas === 'GitHub' &&
+                (equipo.gitOrganizacion ? (
+                  <Link
+                    to={`/equipo/${id}/github-metrics?org=${equipo.gitOrganizacion}&estudiantesIds=${estIds.join(',')}`}
+                    className="metric-box"
+                  >
+                    <span className="icon">📋</span>
+                    <div className="metric-text">
+                      <h3>Tasques (GitHub)</h3>
+                      <p>Gestió de tasques via GitHub</p>
+                    </div>
+                  </Link>
+                ) : (
+                  <div className="metric-box disabled">
+                    <span className="icon">⚠️</span>
+                    <div className="metric-text">
+                      <h3> Mètriques de Tasques Inactives (GitHub) </h3>
+                      <p>
+                        L&apos;equip no ha configurat l&apos;organització de
+                        GitHub.
+                      </p>
+                    </div>
                   </div>
-                </Link>
-              )}
+                ))}
 
-              {equipo.gestionTareas === 'Taiga' && equipo.taigaProyecto && (
-                <Link
-                  to={`/equipo/${id}/taiga-metrics?project=${equipo.taigaProyecto}`}
-                  className="metric-box"
-                >
-                  <span className="icon">🎯</span>
-                  <div className="metric-text">
-                    <h3>Tasques (Taiga)</h3>
-                    <p>Gestió de tasques via Taiga</p>
+              {/* GESTIÓN DE TAREAS: TAIGA */}
+              {equipo.gestionTareas === 'Taiga' &&
+                (equipo.taigaProyecto ? (
+                  <Link
+                    to={`/equipo/${id}/taiga-metrics?project=${equipo.taigaProyecto}`}
+                    className="metric-box"
+                  >
+                    <span className="icon">🎯</span>
+                    <div className="metric-text">
+                      <h3>Tasques (Taiga)</h3>
+                      <p>Gestió de tasques via Taiga</p>
+                    </div>
+                  </Link>
+                ) : (
+                  <div className="metric-box disabled">
+                    <span className="icon">⚠️</span>
+                    <div className="metric-text">
+                      <h3>Mètriques de Tasques Inactives (Taiga)</h3>
+                      <p>L&apos;equip no ha configurat el projecte de Taiga.</p>
+                    </div>
                   </div>
-                </Link>
-              )}
+                ))}
 
+              {/* AVALUACIONES */}
               <Link
                 to={`/equipo/${id}/evaluaciones_generales`}
                 className="metric-box highlight"

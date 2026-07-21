@@ -30,6 +30,34 @@ html {
   color: var(--text-normal);
 }
 
+/* --- ESTADO INACTIVO --- */
+.equipo-page .inactive-state-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh; /* Se asegura de que haya altura suficiente para centrarlo verticalmente */
+}
+
+.equipo-page .inactive-popup {
+  max-width: 500px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  border-top: 4px solid var(--text-muted); /* Una franja superior gris para darle estilo de aviso */
+}
+
+.equipo-page .inactive-popup h2 {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  color: var(--text-dark);
+}
+
+.equipo-page .inactive-popup .btn-primary {
+  margin-top: 1rem;
+}
 /* Contenedor principal */
 .equipo-page {
   display: flex;

@@ -62,68 +62,119 @@ const EquiposPage = () => {
   };
 
   if (loading) {
-    return <div>Cargando equipos...</div>;
+    return (
+      <div className="equipos-page">
+        <Sidebar />
+        <div className="content loading-state">Carregant equips...</div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div>{error}</div>;
+    return (
+      <div className="equipos-page">
+        <Sidebar />
+        <div className="content error-state">{error}</div>
+      </div>
+    );
   }
 
   return (
     <div className="equipos-page">
       <Sidebar />
       <div className="content">
-        <div className="header-container">
-          <h1>Els meus equips</h1>
-          <button className="create-button" onClick={handleCreateEquipoClick}>
-            + Crear un nou equip
-          </button>
-        </div>
-        <h2>Veure els meus equips de cursos encara actius</h2>
-        <div className="cards-container">
-          {equiposActivos.map((equipo, index) => (
-            <div
-              key={equipo.id}
-              className="card"
-              style={{ backgroundColor: COLORS[index % COLORS.length] }}
-              onClick={() => handleCardClick(equipo.id)}
-            >
-              <div className="icon-container">
-                <i className={`fas ${ICONS[index % ICONS.length]}`} />
-              </div>
-              <h2>{equipo.nombre}</h2>
-              <p>
-                <strong>Curs:</strong> {equipo.cursoNombre}
-              </p>
-            </div>
-          ))}
-        </div>
-        <div
-          className="toggle-inactive-teams"
-          onClick={() => setShowInactiveTeams(!showInactiveTeams)}
-        >
-          Veure els meus equips passats de cursos inactius{' '}
-          {showInactiveTeams ? '⬇' : '➡'}
-        </div>
-        {showInactiveTeams && (
-          <div className="cards-container">
-            {equiposInactivos.map((equipo, index) => (
-              <div
-                key={equipo.id}
-                className="inactive-card"
-                style={{ backgroundColor: COLORS[index % COLORS.length] }}
-              >
-                <div className="icon-container">
-                  <i className={`fas ${ICONS[index % ICONS.length]}`} />
-                </div>
-                <h2>{equipo.nombre}</h2>
-                <p>
-                  <strong>Curs:</strong> {equipo.cursoNombre}
-                </p>
-              </div>
-            ))}
+        {/* CABECERA MODERNA */}
+        <div className="page-header">
+          <div className="header-titles">
+            <h1>Els meus equips</h1>
+            <p>Gestió i resum dels teus grups de treball actius i passats.</p>
           </div>
-        )}
+          <div className="header-actions">
+            <button className="btn-primary" onClick={handleCreateEquipoClick}>
+              + Crear un nou equip
+            </button>
+          </div>
+        </div>
+
+        {/* SECCIÓN EQUIPOS ACTIVOS */}
+        <div className="modern-section">
+          <h2 className="section-title">Equips de cursos actius</h2>
+
+          {equiposActivos.length > 0 ? (
+            <div className="equipos-grid">
+              {equiposActivos.map((equipo, index) => (
+                <div
+                  key={equipo.id}
+                  className="equipo-card-colored"
+                  style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                  onClick={() => handleCardClick(equipo.id)}
+                >
+                  <div className="card-top">
+                    <div className="icon-container">
+                      <i className={`fas ${ICONS[index % ICONS.length]}`} />
+                    </div>
+                  </div>
+                  <div className="card-bottom">
+                    <h3>{equipo.nombre}</h3>
+                    <p>
+                      <i className="fas fa-graduation-cap"></i>{' '}
+                      {equipo.cursoNombre}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="empty-state">
+              No tens cap equip actiu en aquest moment.
+            </div>
+          )}
+        </div>
+
+        {/* SECCIÓN EQUIPOS INACTIVOS */}
+        <div className="modern-section mt-2">
+          <button
+            className="toggle-inactive-teams"
+            onClick={() => setShowInactiveTeams(!showInactiveTeams)}
+          >
+            {showInactiveTeams
+              ? 'Ocultar equips passats ▲'
+              : 'Veure equips de cursos inactius ▼'}
+          </button>
+
+          {showInactiveTeams && (
+            <div className="equipos-grid mt-1">
+              {equiposInactivos.length > 0 ? (
+                equiposInactivos.map((equipo, index) => (
+                  <div
+                    key={equipo.id}
+                    className="equipo-card-colored inactive"
+                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                    onClick={() => handleCardClick(equipo.id)}
+                  >
+                    <div className="card-top">
+                      <div className="icon-container">
+                        <i className={`fas ${ICONS[index % ICONS.length]}`} />
+                      </div>
+                      <span className="inactive-badge">Inactiu</span>
+                    </div>
+                    <div className="card-bottom">
+                      <h3>{equipo.nombre}</h3>
+                      <p>
+                        <i className="fas fa-graduation-cap"></i>{' '}
+                        {equipo.cursoNombre}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="empty-state">
+                  No tens equips en cursos passats.
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
