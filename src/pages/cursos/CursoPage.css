@@ -134,6 +134,47 @@ html {
   width: 20%;
 }
 
+.curso-page .table-button {
+  padding: 0 16px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  height: 38px; /* Altura fija para que inputs y botones midan lo mismo */
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+.curso-page .delete-button {
+  border: 1px solid #ef4444;
+  background-color: transparent;
+  color: #ef4444;
+}
+
+.curso-page .delete-button:hover {
+  background-color: #fef2f2;
+}
+
+.curso-page .add-button {
+  border: 1px solid #6c9975;
+  background-color: #6c9975;
+  color: white;
+}
+
+.curso-page .add-button:hover {
+  background-color: #5a8262;
+}
+
+/* Ajuste sutil para que los inputs de la fila de añadir midan lo mismo que el botón */
+.curso-page .add-student-row .form-input {
+  height: 38px;
+  margin: 0;
+}
+
 /* --- TARJETAS (CARDS) --- */
 .curso-page .modern-card {
   background-color: white;

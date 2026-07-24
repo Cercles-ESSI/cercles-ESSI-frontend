@@ -260,12 +260,31 @@
 }
 
 /* 5. El punto del evento */
-.event-dot {
+/* Contenedor de los puntitos debajo del número */
+.dots-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+/* Estilo base del punto */
+.dot {
   height: 6px;
   width: 6px;
   border-radius: 50%;
-  margin-top: 4px;
-  flex-shrink: 0;
+  display: inline-block;
+}
+
+/* Color para el inicio de evaluación (Ej: Verde) */
+.dot.inicio {
+  background-color: #4caf50;
+}
+
+/* Color para el fin de evaluación (Ej: Rojo/Naranja) */
+.dot.fin {
+  background-color: #f44336;
 }
 
 /* 8. RECORDATORIOS Y BOTONES (Adaptados del CSS original) */

@@ -34,7 +34,9 @@ const HomePage = () => {
     nombre: '',
     gitUsername: null,
   });
-
+  const [date, setDate] = useState(new Date());
+  const [eventosSeleccionados, setEventosSeleccionados] = useState([]);
+  const [fechaSeleccionadaTexto, setFechaSeleccionadaTexto] = useState('');
   const [dashboardData, setDashboardData] = useState(null);
 
   useEffect(() => {
@@ -58,31 +60,60 @@ const HomePage = () => {
   const handleNavigateToCourses = () => (window.location.href = '/cursos');
   const handleNavigateToProjects = () => (window.location.href = '/equipos');
 
+  // Función auxiliar para formatear la fecha del calendario a 'YYYY-MM-DD'
+  const formatearFecha = (fecha) => {
+    const year = fecha.getFullYear();
+    const month = String(fecha.getMonth() + 1).padStart(2, '0');
+    const day = String(fecha.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  // Función para comprobar si un día tiene eventos
+  const obtenerEventosDelDia = (fechaCalendario) => {
+    const fechaString = formatearFecha(fechaCalendario);
+    let eventos = [];
+
+    dashboardData.evaluaciones.forEach((ev) => {
+      if (ev.fecha_inicio === fechaString) {
+        eventos.push({ tipo: 'inicio', nombreAsignatura: ev.nombreAsignatura });
+      }
+      if (ev.fecha_fin === fechaString) {
+        eventos.push({ tipo: 'fin', nombreAsignatura: ev.nombreAsignatura });
+      }
+    });
+
+    return eventos;
+  };
+
   if (!rol || !userData.nombre || !dashboardData) {
     return <p>Càrregant...</p>;
   }
 
-  // 3. Función para añadir el punto en los días con evento
+  // Función para añadir el punto en los días con evento
   const tileContent = ({ date, view }) => {
+    // Solo queremos mostrar los puntos en la vista de mes
     if (view === 'month') {
-      const currentEvent = staticEventsData.find(
-        (event) =>
-          event.date.getDate() === date.getDate() &&
-          event.date.getMonth() === date.getMonth() &&
-          event.date.getFullYear() === date.getFullYear(),
-      );
+      const eventos = obtenerEventosDelDia(date);
 
-      // Si encuentra un evento, devuelve un div con el color correspondiente
-      if (currentEvent) {
+      if (eventos.length > 0) {
         return (
-          <div
-            className="event-dot"
-            style={{ backgroundColor: currentEvent.color }}
-          ></div>
+          <div className="dots-container">
+            {eventos.map((evento, index) => (
+              <span key={index} className={`dot ${evento.tipo}`}></span>
+            ))}
+          </div>
         );
       }
     }
     return null;
+  };
+
+  //Manejar el click sobre un día específico
+  const handleDayClick = (clickedDate) => {
+    setDate(clickedDate);
+    const eventos = obtenerEventosDelDia(clickedDate);
+    setEventosSeleccionados(eventos);
+    setFechaSeleccionadaTexto(clickedDate.toLocaleDateString());
   };
 
   return (
@@ -210,7 +241,68 @@ const HomePage = () => {
           <div className="dashboard-section events-section">
             <h2>Esdeveniments Propers</h2>
             <div className="calendar-container">
-              <Calendar tileContent={tileContent} locale="ca-ES" />
+              <Calendar
+                onChange={setDate}
+                value={date}
+                tileContent={tileContent}
+                onClickDay={handleDayClick}
+                locale="ca-ES"
+              />
+            </div>
+
+            <div
+              className="eventos-lateral-panel"
+              style={{
+                minWidth: '250px',
+                padding: '15px',
+                background: '#f9f9f9',
+                borderRadius: '8px',
+                border: '1px solid #e0e0e0',
+              }}
+            >
+              <h3>Detalls del dia</h3>
+              <p style={{ fontSize: '0.9rem', color: '#666' }}>
+                {fechaSeleccionadaTexto || 'Selecciona un dia'}
+              </p>
+
+              {eventosSeleccionados.length > 0 ? (
+                <ul
+                  style={{ listStyle: 'none', padding: 0, marginTop: '10px' }}
+                >
+                  {eventosSeleccionados.map((ev, index) => (
+                    <li
+                      key={index}
+                      style={{
+                        marginBottom: '10px',
+                        padding: '8px',
+                        background: '#fff',
+                        borderRadius: '4px',
+                        borderLeft: `4px solid ${ev.tipo === 'inicio' ? '#4caf50' : '#f44336'}`,
+                      }}
+                    >
+                      <strong>
+                        {ev.tipo === 'inicio'
+                          ? "🟢 Inici d'avaluació"
+                          : "🔴 Fi d'avaluació"}
+                      </strong>
+                      {/* Mostramos el nombre de la asignatura que viene del backend */}
+                      <div style={{ fontSize: '0.85rem', color: '#555' }}>
+                        Assignatura: {ev.nombreAsignatura}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p
+                  style={{
+                    fontSize: '0.85rem',
+                    color: '#888',
+                    fontStyle: 'italic',
+                  }}
+                >
+                  No hi ha esdeveniments per a aquest dia.
+                </p>
+              )}
             </div>
           </div>
         </div>

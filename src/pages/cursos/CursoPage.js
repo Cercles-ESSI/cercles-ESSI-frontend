@@ -741,7 +741,7 @@ const CursoPage = () => {
                           {isEditing && (
                             <td>
                               <button
-                                className="btn-danger-outline btn-small"
+                                className="table-button delete-button"
                                 onClick={() =>
                                   handleDeleteStudent({
                                     nombre:
@@ -802,7 +802,7 @@ const CursoPage = () => {
                         </td>
                         <td>
                           <button
-                            className="btn-primary btn-small"
+                            className="table-button add-button"
                             onClick={() => {
                               if (validarCorreo(newEstudiante.correo)) {
                                 setShowAddConfirmPopup(true);
