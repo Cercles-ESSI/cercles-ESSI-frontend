@@ -368,12 +368,18 @@ export const confirmarProyecto = async (equipoId, proyectoUrl, token) => {
 };
 
 // Obtener métricas del equipo
-export const getMetrics = async (org, estudiantesIds, idEquipo, token) => {
+export const getMetrics = async (
+  org,
+  estudiantesIds,
+  idEquipo,
+  token,
+  isGitHub,
+) => {
   if (!org || !estudiantesIds?.length || !idEquipo) {
     throw new Error('Faltan parámetros necesarios.');
   }
 
-  const queryParams = `estudiantesIds=${estudiantesIds.join('&estudiantesIds=')}`;
+  const queryParams = `estudiantesIds=${estudiantesIds.join('&estudiantesIds=')}&isGithub=${isGitHub}`;
   const url = `${API_BASE_URL}/github/equipo/${idEquipo}/metrics/${org}?${queryParams}`;
   console.log('url ', url);
 

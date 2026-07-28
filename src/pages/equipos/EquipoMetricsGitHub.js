@@ -79,11 +79,14 @@ const EquipoMetricsGitHub = () => {
       try {
         setLoadingMetrics(true);
 
+        const isGitHub = true;
+
         const data = await getMetrics(
           localOrg,
           localEstudiantesIds,
           equipo.id,
           token,
+          isGitHub,
         );
 
         if (data && data.userMetrics && data.globalIssueDetails) {

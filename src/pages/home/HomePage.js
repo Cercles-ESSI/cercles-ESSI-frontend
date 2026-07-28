@@ -75,10 +75,18 @@ const HomePage = () => {
 
     dashboardData.evaluaciones.forEach((ev) => {
       if (ev.fecha_inicio === fechaString) {
-        eventos.push({ tipo: 'inicio', nombreAsignatura: ev.nombreAsignatura });
+        eventos.push({
+          tipo: 'inicio',
+          nombreAsignatura: ev.nombreAsignatura,
+          numeroIteracion: ev.numeroIteracion,
+        });
       }
       if (ev.fecha_fin === fechaString) {
-        eventos.push({ tipo: 'fin', nombreAsignatura: ev.nombreAsignatura });
+        eventos.push({
+          tipo: 'fin',
+          nombreAsignatura: ev.nombreAsignatura,
+          numeroIteracion: ev.numeroIteracion,
+        });
       }
     });
 
@@ -185,13 +193,21 @@ const HomePage = () => {
           <div className="dashboard-section kpi-section">
             <div className="kpi-card-container">
               <div className="kpi-card yellow">
-                <p className="kpi-title">Total Cursos</p>
-                <p className="kpi-value">{dashboardData.totalCursos || 0}</p>
-              </div>
-              <div className="kpi-card blue">
                 <p className="kpi-title">Cursos Actius</p>
                 <p className="kpi-value">
                   {dashboardData.totalCursosActivos || 0}
+                </p>
+              </div>
+              <div className="kpi-card blue">
+                <p className="kpi-title">
+                  {rol === 'Estudiante'
+                    ? 'Total Tasques pendents'
+                    : 'Total Cursos'}
+                </p>
+                <p className="kpi-value">
+                  {rol === 'Estudiante'
+                    ? dashboardData.totalTareasPendientes || 0
+                    : dashboardData.totalCursos || 0}
                 </p>
               </div>
               <div className="kpi-card purple">
@@ -282,10 +298,9 @@ const HomePage = () => {
                     >
                       <strong>
                         {ev.tipo === 'inicio'
-                          ? "🟢 Inici d'avaluació"
-                          : "🔴 Fi d'avaluació"}
+                          ? `🟢 Inici d'iteració ${ev.numeroIteracion}`
+                          : `🔴 Fi d'iteració ${ev.numeroIteracion}`}
                       </strong>
-                      {/* Mostramos el nombre de la asignatura que viene del backend */}
                       <div style={{ fontSize: '0.85rem', color: '#555' }}>
                         Assignatura: {ev.nombreAsignatura}
                       </div>

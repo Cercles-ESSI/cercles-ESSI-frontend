@@ -79,12 +79,21 @@ const EquipoMetricsPage = () => {
       try {
         setLoadingMetrics(true);
 
+        const isGitHub = false;
+        // 1. Registrar el tiempo de inicio antes de la llamada a la API
+        const startTime = performance.now();
         const data = await getMetrics(
           localOrg,
           localEstudiantesIds,
           equipo.id,
           token,
+          isGitHub,
         );
+
+        // 2. Registrar el tiempo final y calcular la diferencia
+        const endTime = performance.now();
+        const duration = (endTime - startTime).toFixed(2); // Milisegundos con 2 decimales
+        console.log(`El tiempo de carga de getMetrics fue de: ${duration} ms`);
 
         if (data && data.userMetrics && data.globalIssueDetails) {
           console.log('Datos obtenidos en fetchMetrics:', data);
