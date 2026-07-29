@@ -94,7 +94,7 @@ const HomePage = () => {
   };
 
   if (!rol || !userData.nombre || !dashboardData) {
-    return <p>Càrregant...</p>;
+    return null;
   }
 
   // Función para añadir el punto en los días con evento

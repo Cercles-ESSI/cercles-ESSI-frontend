@@ -13,6 +13,7 @@ html {
   flex-direction: row;
   min-height: 100vh;
   padding-left: 260px !important;
+  justify-content: center;
 }
 
 .cursos-page .content {
