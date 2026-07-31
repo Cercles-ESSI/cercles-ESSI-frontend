@@ -368,7 +368,37 @@ export const confirmarProyecto = async (equipoId, proyectoUrl, token) => {
 };
 
 // Obtener métricas del equipo
-export const getMetrics = async (
+export const getMetrics = async (idEquipo, token) => {
+  if (!idEquipo) {
+    throw new Error('Faltan parámetros necesarios.');
+  }
+
+  const url = `${API_BASE_URL}/github/equipo/${idEquipo}/consultar-metrics`;
+  console.log('url ', url);
+
+  return await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+      return response.json(); // Retorna explícitamente el JSON
+    })
+    .then((data) => {
+      console.log('Datos obtenidos:', data);
+      return data; // Asegúrate de retornar los datos aquí
+    })
+    .catch((error) => {
+      console.error('Error en la solicitud:', error);
+      throw error; // Re-lanza el error para que se pueda manejar en el `useEffect`
+    });
+};
+
+export const syncGitHubMetrics = async (
   org,
   estudiantesIds,
   idEquipo,
@@ -384,6 +414,7 @@ export const getMetrics = async (
   console.log('url ', url);
 
   return await fetch(url, {
+    method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',

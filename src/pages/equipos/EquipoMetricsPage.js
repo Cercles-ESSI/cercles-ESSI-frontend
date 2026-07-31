@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
-import { getMetrics, getEquipoDetalle } from '../../services/Equipos_Api';
+import {
+  getMetrics,
+  getEquipoDetalle,
+  syncGitHubMetrics,
+} from '../../services/Equipos_Api';
 import { Bar, Pie } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -72,46 +76,51 @@ const EquipoMetricsPage = () => {
     }
   }, [org, estudiantesIds]);
 
+  const fetchMetrics = async (equipoId) => {
+    try {
+      setLoadingMetrics(true);
+
+      // 1. Registrar el tiempo de inicio antes de la llamada a la API
+      const startTime = performance.now();
+      const data = await getMetrics(equipo.id, token);
+
+      // 2. Registrar el tiempo final y calcular la diferencia
+      const endTime = performance.now();
+      const duration = (endTime - startTime).toFixed(2); // Milisegundos con 2 decimales
+      console.log(`El tiempo de carga de getMetrics fue de: ${duration} ms`);
+
+      if (data && data.userMetrics && data.globalIssueDetails) {
+        console.log('Datos obtenidos en fetchMetrics:', data);
+        setMetrics(data.userMetrics);
+        setGlobalIssueDetails(data.globalIssueDetails);
+      } else {
+        console.error('La respuesta no tiene las claves esperadas:', data);
+        setError('Error: La respuesta del servidor no es válida.');
+      }
+    } catch (error) {
+      console.error('Error en fetchMetrics:', error.message);
+      setError('Error al obtener las métricas.');
+    } finally {
+      setLoadingMetrics(false);
+    }
+  };
+
+  //Sincronizacion en segundo plano de GITHUB
   useEffect(() => {
     if (!localOrg || !localEstudiantesIds?.length || equipo === null) return;
+    fetchMetrics(equipo.id);
 
-    const fetchMetrics = async () => {
-      try {
-        setLoadingMetrics(true);
-
-        const isGitHub = false;
-        // 1. Registrar el tiempo de inicio antes de la llamada a la API
-        const startTime = performance.now();
-        const data = await getMetrics(
-          localOrg,
-          localEstudiantesIds,
-          equipo.id,
-          token,
-          isGitHub,
-        );
-
-        // 2. Registrar el tiempo final y calcular la diferencia
-        const endTime = performance.now();
-        const duration = (endTime - startTime).toFixed(2); // Milisegundos con 2 decimales
-        console.log(`El tiempo de carga de getMetrics fue de: ${duration} ms`);
-
-        if (data && data.userMetrics && data.globalIssueDetails) {
-          console.log('Datos obtenidos en fetchMetrics:', data);
-          setMetrics(data.userMetrics);
-          setGlobalIssueDetails(data.globalIssueDetails);
-        } else {
-          console.error('La respuesta no tiene las claves esperadas:', data);
-          setError('Error: La respuesta del servidor no es válida.');
-        }
-      } catch (error) {
-        console.error('Error en fetchMetrics:', error.message);
-        setError('Error al obtener las métricas.');
-      } finally {
-        setLoadingMetrics(false);
-      }
-    };
-
-    fetchMetrics();
+    const isGitHub = false;
+    syncGitHubMetrics(
+      localOrg,
+      localEstudiantesIds,
+      equipo.id,
+      token,
+      isGitHub,
+    ).then(() => {
+      console.log('Sincronització de GitHub completada.');
+      fetchMetrics(equipo.id);
+    });
   }, [localOrg, localEstudiantesIds, equipo, token]);
 
   useEffect(() => {
@@ -130,7 +139,7 @@ const EquipoMetricsPage = () => {
       <div className="loading-container">
         <img src={loadingGif} alt="Cargando..." className="loading-gif" />
         <p className="loading-text">
-          Carregant les dades... Si us plau, espereu! ⏳
+          Carregant les dades... Si us plau, espereu!
         </p>
       </div>
     );

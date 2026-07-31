@@ -44,6 +44,7 @@ const EquipoMetricsTaiga = () => {
   // Estados para Taiga (Base de Datos Local)
   const [datosMetricas, setDatosMetricas] = useState(null);
   const [loadingTaigaLocal, setLoadingTaigaLocal] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   // --- ESTADOS DEL FILTRO ---
   const [filtroSeleccionado, setFiltroSeleccionado] = useState('global');
@@ -74,6 +75,23 @@ const EquipoMetricsTaiga = () => {
       console.error('Error en cargarEstadisticasLocales:', err);
     } finally {
       setLoadingTaigaLocal(false);
+    }
+  };
+
+  const handleManualSync = async () => {
+    if (!id || !proyecto) return;
+
+    try {
+      setIsSyncing(true); // Mostramos el texto de "Sincronizando..."
+      await syncTaigaMetrics(id, proyecto, token);
+      console.log('Sincronització manual de Taiga completada.');
+
+      // Volvemos a cargar los datos para que la pantalla se actualice con lo nuevo
+      await cargarEstadisticasLocales(id, proyecto, filtroSeleccionado);
+    } catch (err) {
+      console.error('Error en sync manual:', err);
+    } finally {
+      setIsSyncing(false); // Ocultamos el texto
     }
   };
 
@@ -172,7 +190,50 @@ const EquipoMetricsTaiga = () => {
         </h1>
 
         <div className="taiga-section">
-          <h3>Resum de contribucions individuals a Taiga</h3>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '1rem',
+            }}
+          >
+            <h3 style={{ margin: 0 }}>
+              Resum de contribucions individuals a Taiga
+            </h3>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+              {isSyncing && (
+                <span
+                  style={{
+                    color: '#0284c7',
+                    fontWeight: '600',
+                    fontSize: '0.95rem',
+                  }}
+                >
+                  Sincronitzant dades... ⏳
+                </span>
+              )}
+              <button
+                onClick={handleManualSync}
+                disabled={isSyncing || loadingTaigaLocal}
+                style={{
+                  padding: '10px 16px',
+                  backgroundColor: isSyncing ? '#94a3b8' : '#0ea5e9',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: isSyncing ? 'not-allowed' : 'pointer',
+                  fontWeight: 'bold',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                  transition: 'background-color 0.2s',
+                }}
+              >
+                Forçar Sincronització
+              </button>
+            </div>
+          </div>
 
           {/* --- BARRA DE FILTROS --- */}
           <div style={filterContainerStyle}>
