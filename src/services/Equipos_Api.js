@@ -398,6 +398,37 @@ export const getMetrics = async (idEquipo, token) => {
     });
 };
 
+//Obtener metricas de la gestion de proyecto
+export const getMetricsP = async (idEquipo, token) => {
+  if (!idEquipo) {
+    throw new Error('Faltan parámetros necesarios.');
+  }
+
+  const url = `${API_BASE_URL}/github/equipo/${idEquipo}/consultar-metrics-proyecto`;
+  console.log('url ', url);
+
+  return await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+      return response.json(); // Retorna explícitamente el JSON
+    })
+    .then((data) => {
+      console.log('Datos obtenidos:', data);
+      return data; // Asegúrate de retornar los datos aquí
+    })
+    .catch((error) => {
+      console.error('Error en la solicitud:', error);
+      throw error; // Re-lanza el error para que se pueda manejar en el `useEffect`
+    });
+};
+
 export const syncGitHubMetrics = async (
   org,
   estudiantesIds,

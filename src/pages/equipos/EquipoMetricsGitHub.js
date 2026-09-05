@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
-import { getMetrics, getEquipoDetalle } from '../../services/Equipos_Api';
+import {
+  getMetricsP,
+  getEquipoDetalle,
+  syncGitHubMetrics,
+} from '../../services/Equipos_Api';
 import { Bar, Pie } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -72,40 +76,45 @@ const EquipoMetricsGitHub = () => {
     }
   }, [org, estudiantesIds]);
 
+  const fetchMetrics = async (equipoId) => {
+    try {
+      setLoadingMetrics(true);
+
+      const data = await getMetricsP(equipo.id, token);
+
+      if (data && data.userMetrics && data.globalIssueDetails) {
+        console.log('Datos obtenidos en fetchMetrics:', data);
+        setMetrics(data.userMetrics);
+        setGlobalIssueDetails(data.globalIssueDetails);
+      } else {
+        console.error('La respuesta no tiene las claves esperadas:', data);
+        setError('Error: La respuesta del servidor no es válida.');
+      }
+    } catch (error) {
+      console.error('Error en fetchMetrics:', error.message);
+      setError('Error al obtener las métricas.');
+    } finally {
+      setLoadingMetrics(false);
+    }
+  };
+
   useEffect(() => {
     if (!localOrg || !localEstudiantesIds?.length || equipo === null) return;
 
-    const fetchMetrics = async () => {
-      try {
-        setLoadingMetrics(true);
+    fetchMetrics(equipo.id);
 
-        const isGitHub = true;
+    const isGitHub = true;
 
-        const data = await getMetrics(
-          localOrg,
-          localEstudiantesIds,
-          equipo.id,
-          token,
-          isGitHub,
-        );
-
-        if (data && data.userMetrics && data.globalIssueDetails) {
-          console.log('Datos obtenidos en fetchMetrics:', data);
-          setMetrics(data.userMetrics);
-          setGlobalIssueDetails(data.globalIssueDetails);
-        } else {
-          console.error('La respuesta no tiene las claves esperadas:', data);
-          setError('Error: La respuesta del servidor no es válida.');
-        }
-      } catch (error) {
-        console.error('Error en fetchMetrics:', error.message);
-        setError('Error al obtener las métricas.');
-      } finally {
-        setLoadingMetrics(false);
-      }
-    };
-
-    fetchMetrics();
+    syncGitHubMetrics(
+      localOrg,
+      localEstudiantesIds,
+      equipo.id,
+      token,
+      isGitHub,
+    ).then(() => {
+      console.log('Sincronització de GitHub completada.');
+      fetchMetrics(equipo.id);
+    });
   }, [localOrg, localEstudiantesIds, equipo, token]);
 
   useEffect(() => {
@@ -213,7 +222,6 @@ const EquipoMetricsGitHub = () => {
             </tr>
           </tbody>
         </table>
-
         {/* Sección Expandible */}
         <div>
           <h2
@@ -240,26 +248,23 @@ const EquipoMetricsGitHub = () => {
                 </thead>
                 <tbody>
                   {globalIssueDetails
-                    .filter(
-                      (detail) =>
-                        detail.includes('user story') ||
-                        detail.includes('historia de usuario') ||
-                        detail.includes("història d'usuari"),
-                    )
+                    .filter((detail) => detail.type === 'USER_STORY')
                     .map((detail, index) => {
-                      const shortDetail = detail.split(',')[0];
-                      const noAssignat = detail.includes('Assignees: []');
+                      const shortDetail = `[${detail.number}] ${detail.title}`;
+                      const noAssignat = detail.assignees.length === 0;
 
                       return (
                         <tr key={`user-story-${index}`}>
                           <td>{shortDetail}</td>
+
                           {metrics.map((m) => (
                             <td key={`user-story-detail-${m.username}`}>
-                              {detail.includes(`Assignees: [${m.username}]`)
+                              {detail.assignees.includes(m.username) //
                                 ? '✔️'
                                 : ''}
                             </td>
                           ))}
+
                           <td>{noAssignat ? '✔️' : ''}</td>
                         </tr>
                       );
@@ -281,26 +286,23 @@ const EquipoMetricsGitHub = () => {
                 </thead>
                 <tbody>
                   {globalIssueDetails
-                    .filter(
-                      (detail) =>
-                        detail.includes('task') ||
-                        detail.includes('tarea') ||
-                        detail.includes('tasca'),
-                    )
+                    .filter((detail) => detail.type === 'TASK')
                     .map((detail, index) => {
-                      const shortDetail = detail.split(',')[0];
-                      const noAssignat = detail.includes('Assignees: []');
+                      const shortDetail = `[${detail.number}] ${detail.title}`;
+                      const noAssignat = detail.assignees.length === 0; //
 
                       return (
                         <tr key={`task-${index}`}>
                           <td>{shortDetail}</td>
+
                           {metrics.map((m) => (
                             <td key={`task-detail-${m.username}`}>
-                              {detail.includes(`Assignees: [${m.username}]`)
+                              {detail.assignees.includes(m.username)
                                 ? '✔️'
                                 : ''}
                             </td>
                           ))}
+
                           <td>{noAssignat ? '✔️' : ''}</td>
                         </tr>
                       );
