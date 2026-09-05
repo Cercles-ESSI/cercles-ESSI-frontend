@@ -168,7 +168,7 @@ const EquipoMetricsTaiga = () => {
       <div className="loading-container">
         <img src={loadingGif} alt="Cargando..." className="loading-gif" />
         <p className="loading-text">
-          Carregant les dades... Si us plau, espereu! ⏳
+          Carregant les dades... Si us plau, espereu!
         </p>
       </div>
     );

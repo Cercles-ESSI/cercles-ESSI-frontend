@@ -83,7 +83,7 @@ const EquiposPage = () => {
     <div className="equipos-page">
       <Sidebar />
       <div className="content">
-        {/* CABECERA MODERNA */}
+        {/* CABECERA */}
         <div className="page-header">
           <div className="header-titles">
             <h1>Els meus equips</h1>

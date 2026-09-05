@@ -66,12 +66,7 @@ const DatosGeneralesEquipoPage = () => {
     const fetchMetrics = async () => {
       try {
         setLoadingMetrics(true);
-        const metricsData = await getMetrics(
-          localOrg,
-          localEstudiantesIds,
-          equipo.id,
-          token,
-        );
+        const metricsData = await getMetrics(equipo.id, token);
         if (metricsData && metricsData.userMetrics) {
           console.log('Datos obtenidos en fetchMetrics:', metricsData);
           setMetrics(metricsData.userMetrics);
@@ -207,7 +202,7 @@ const DatosGeneralesEquipoPage = () => {
         )}
 
         {/* Primera Tabla de métricas */}
-        <h3>Mètriques de les contribucions dels usuaris</h3>
+        <h2>Mètriques de les contribucions dels usuaris</h2>
         {metrics.length > 0 ? (
           <table>
             <thead>
@@ -287,7 +282,7 @@ const DatosGeneralesEquipoPage = () => {
         )}
 
         {/* Segunda Tabla de métricas */}
-        <h3>Mètriques d&apos;històries d&apos;usuari i tasques</h3>
+        <h2>Mètriques d&apos;històries d&apos;usuari i tasques</h2>
         {metrics.length > 0 ? (
           <table>
             <thead>
