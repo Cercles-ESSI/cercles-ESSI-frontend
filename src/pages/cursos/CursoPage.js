@@ -1,3 +1,4 @@
+import * as XLSX from 'xlsx';
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from '../../components/common/Sidebar';
@@ -287,6 +288,57 @@ const CursoPage = () => {
       .finally(() => {
         setShowDeleteConfirmPopup(false);
       });
+  };
+
+  const handleExportExcel = () => {
+    if (!curso || !curso.equipos || curso.equipos.length === 0) return;
+
+    const datosExcel = [];
+
+    curso.equipos.forEach((equipo, index) => {
+      if (index > 0) {
+        datosExcel.push({
+          "Nom de l'Equip": '',
+          Estudiant: '',
+          'Correu electrònic': '',
+          Grup: '',
+          Validat: '',
+        });
+      }
+
+      if (equipo.miembros && Object.keys(equipo.miembros).length > 0) {
+        Object.entries(equipo.miembros).forEach(([nombre, grupo]) => {
+          const correo =
+            equipo.correos && equipo.correos[nombre]
+              ? equipo.correos[nombre]
+              : 'Sense correu';
+
+          datosExcel.push({
+            "Nom de l'Equip": equipo.nombreEquipo,
+            Estudiant: nombre,
+            'Correu electrònic': correo,
+            Grup: grupo || 'Sense Grup',
+            Validat: equipo.validado ? 'Sí' : 'No',
+          });
+        });
+      }
+    });
+
+    // Crear la hoja y el libro de Excel
+    const worksheet = XLSX.utils.json_to_sheet(datosExcel);
+    const anchuraColumnas = [
+      { wch: 25 }, // A: Nom de l'Equip
+      { wch: 35 }, // B: Estudiant
+      { wch: 40 }, // C: Correu electrònic
+      { wch: 15 }, // D: Grup
+      { wch: 10 }, // E: Validat
+    ];
+    worksheet['!cols'] = anchuraColumnas;
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Equips');
+
+    // Descargar el archivo con el nombre de la asignatura
+    XLSX.writeFile(workbook, `Equips_${curso.nombreAsignatura}.xlsx`);
   };
 
   return (
@@ -587,13 +639,26 @@ const CursoPage = () => {
             <div className="modern-card">
               <div className="section-header">
                 <h2>Equips</h2>
-                <button
-                  className="btn-primary btn-small"
-                  onClick={() => navigate(`/equipos/crear?cursoId=${curso.id}`)}
-                  disabled={isEditing}
-                >
-                  Crear Equip
-                </button>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <button
+                    className="btn-secondary btn-small"
+                    onClick={handleExportExcel}
+                    disabled={
+                      isEditing || !curso.equipos || curso.equipos.length === 0
+                    }
+                  >
+                    Exportar a Excel
+                  </button>
+                  <button
+                    className="btn-primary btn-small"
+                    onClick={() =>
+                      navigate(`/equipos/crear?cursoId=${curso.id}`)
+                    }
+                    disabled={isEditing}
+                  >
+                    Crear Equip
+                  </button>
+                </div>
               </div>
 
               <div className="table-tabs">

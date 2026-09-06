@@ -48,6 +48,44 @@ const EquipoMetricsGitHub = () => {
   const [error, setError] = useState(null);
   const [localEstudiantesIds, setLocalEstudiantesIds] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  const formatUltimaSincronizacion = (fechaIso) => {
+    if (!fechaIso) return 'Mai';
+
+    const fecha = new Date(fechaIso);
+    return fecha.toLocaleString('ca-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const handleManualSync = async () => {
+    if (!id || !localOrg) return;
+
+    try {
+      setIsSyncing(true);
+      const isGitHub = true;
+      await syncGitHubMetrics(
+        localOrg,
+        localEstudiantesIds,
+        equipo.id,
+        token,
+        isGitHub,
+      );
+      console.log('Sincronització manual de Taiga completada.');
+
+      // Volvemos a cargar los datos para que la pantalla se actualice con lo nuevo
+      await fetchMetrics(equipo.id);
+    } catch (err) {
+      console.error('Error en sync manual:', err);
+    } finally {
+      setIsSyncing(false); // Ocultamos el texto
+    }
+  };
 
   useEffect(() => {
     const fetchEquipoDetalle = async () => {
@@ -128,12 +166,12 @@ const EquipoMetricsGitHub = () => {
     return () => clearInterval(interval);
   }, [loadingEquipo, loadingMetrics]);
 
-  if (loadingEquipo || loadingMetrics) {
+  if (loadingEquipo) {
     return (
       <div className="loading-container">
         <img src={loadingGif} alt="Cargando..." className="loading-gif" />
         <p className="loading-text">
-          Carregant les dades... Si us plau, espereu! ⏳
+          Carregant les dades... Si us plau, espereu!
         </p>
       </div>
     );
@@ -156,7 +194,68 @@ const EquipoMetricsGitHub = () => {
           Rendiment a GitHub - Equip {equipo.nombre} pel curs{' '}
           {equipo.nombreAsignatura}
         </h1>
-        <h1>Nom de l&apos;organització {org}</h1>
+
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start', // Cambiado a flex-start para que no se descentre con la altura de la fecha
+            flexWrap: 'wrap',
+            gap: '1rem',
+            marginBottom: '20px', // Un poco de espacio antes de la tabla
+          }}
+        >
+          <h3>Nom de l&apos;organització {org}</h3>
+
+          {/* Contenedor vertical para el botón y la fecha */}
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+              gap: '8px',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+              {isSyncing && (
+                <span
+                  style={{
+                    color: '#0284c7',
+                    fontWeight: '600',
+                    fontSize: '0.95rem',
+                  }}
+                >
+                  Sincronitzant dades...
+                </span>
+              )}
+              <button
+                onClick={handleManualSync}
+                disabled={isSyncing || loadingMetrics}
+                style={{
+                  padding: '10px 16px',
+                  backgroundColor: isSyncing ? '#94a3b8' : '#0ea5e9',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: isSyncing ? 'not-allowed' : 'pointer',
+                  fontWeight: 'bold',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                  transition: 'background-color 0.2s',
+                }}
+              >
+                Forçar Sincronització
+              </button>
+            </div>
+
+            {/*Texto de última actualización */}
+            <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+              Última actualització:{' '}
+              {equipo
+                ? formatUltimaSincronizacion(equipo.ultimaSincronizacionGit)
+                : 'Desconeguda'}
+            </span>
+          </div>
+        </div>
 
         {/* Primera Tabla */}
         <h3>Mètriques d&apos;històries d&apos;usuari i tasques</h3>
@@ -320,88 +419,96 @@ const EquipoMetricsGitHub = () => {
           <div className="chart-row">
             <div className="chart-container-large">
               <h2>Històries d&apos;usuari i tasques tancades</h2>
-              <Bar
-                data={{
-                  labels: metrics.map((m) => m.nombre),
-                  datasets: [
-                    {
-                      label: 'HU tancades',
-                      data: metrics.map((m) => m.userStoriesClosed),
-                      backgroundColor: '#A7D2CB',
-                    },
-                    {
-                      label: 'Tasques tancades',
-                      data: metrics.map((m) => m.tasksClosed),
-                      backgroundColor: '#F2D388',
-                    },
-                  ],
+              <div
+                style={{
+                  position: 'relative',
+                  height: '350px',
+                  width: '100%',
                 }}
-                options={{
-                  responsive: true,
-                  plugins: {
-                    legend: {
-                      labels: {
-                        font: {
-                          size: 16,
-                        },
+              >
+                <Bar
+                  data={{
+                    labels: metrics.map((m) => m.nombre),
+                    datasets: [
+                      {
+                        label: 'HU tancades',
+                        data: metrics.map((m) => m.userStoriesClosed),
+                        backgroundColor: '#A7D2CB',
                       },
+                      {
+                        label: 'Tasques tancades',
+                        data: metrics.map((m) => m.tasksClosed),
+                        backgroundColor: '#F2D388',
+                      },
+                    ],
+                  }}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: { labels: { font: { size: 16 } } },
                     },
-                  },
-                  scales: {
-                    x: { ticks: { font: { size: 14 } } },
-                    y: { ticks: { font: { size: 14 } } },
-                  },
-                }}
-              />
+                    scales: {
+                      x: { ticks: { font: { size: 14 } } },
+                      y: { ticks: { font: { size: 14 } } },
+                    },
+                  }}
+                />
+              </div>
             </div>
             <div className="chart-container">
               <h2>Distribució d&apos;històries d&apos;usuari totals</h2>
-              <Pie
-                data={{
-                  labels: metrics.every((m) => m.userStories === 0)
-                    ? ['No hi ha cap HU']
-                    : metrics.map((m) => m.nombre),
-                  datasets: [
-                    {
-                      data: metrics.every((m) => m.userStories === 0)
-                        ? [1] // Valor fijo para el caso de "No hi ha cap HU"
-                        : metrics.map((m) => m.userStories),
-                      backgroundColor: metrics.every((m) => m.userStories === 0)
-                        ? ['#C0C0C0'] // Color gris para "No hi ha cap HU"
-                        : [
-                            '#6C9975',
-                            '#BB6365',
-                            '#785B75',
-                            '#5E807F',
-                            '#BA5A31',
-                            '#355C7D',
-                            '#F4A261',
-                            '#E76F51',
-                            '#2A9D8F',
-                            '#264653',
-                            '#A8DADC',
-                            '#457B9D',
-                            '#E9C46A',
-                            '#F4A3B3',
-                            '#D4A5A5',
-                            '#B5838D',
-                          ],
-                    },
-                  ],
+              <div
+                style={{
+                  position: 'relative',
+                  height: '350px',
+                  width: '100%',
                 }}
-                options={{
-                  responsive: true,
-                  plugins: {
-                    legend: {
-                      labels: {
-                        font: {
-                          size: 16,
-                        },
+              >
+                <Pie
+                  data={{
+                    labels: metrics.every((m) => m.userStories === 0)
+                      ? ['No hi ha cap HU']
+                      : metrics.map((m) => m.nombre),
+                    datasets: [
+                      {
+                        data: metrics.every((m) => m.userStories === 0)
+                          ? [1] // Valor fijo para el caso de "No hi ha cap HU"
+                          : metrics.map((m) => m.userStories),
+                        backgroundColor: metrics.every(
+                          (m) => m.userStories === 0,
+                        )
+                          ? ['#C0C0C0'] // Color gris para "No hi ha cap HU"
+                          : [
+                              '#6C9975',
+                              '#BB6365',
+                              '#785B75',
+                              '#5E807F',
+                              '#BA5A31',
+                              '#355C7D',
+                              '#F4A261',
+                              '#E76F51',
+                              '#2A9D8F',
+                              '#264653',
+                              '#A8DADC',
+                              '#457B9D',
+                              '#E9C46A',
+                              '#F4A3B3',
+                              '#D4A5A5',
+                              '#B5838D',
+                            ],
                       },
+                    ],
+                  }}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: { labels: { font: { size: 14 } } },
                     },
-                  },
-                }}
-              />
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>

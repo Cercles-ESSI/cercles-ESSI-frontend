@@ -1,6 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { getEquipoDetalle, getMetrics } from '../../services/Equipos_Api';
+import {
+  getEquipoDetalle,
+  getMetrics,
+  getMetricsP,
+} from '../../services/Equipos_Api';
 import { getEvaluacionesPorEquipo } from '../../services/Evaluaciones_Api';
 import Sidebar from '../../components/common/Sidebar';
 import './DatosGeneralesEquipoPage.css';
@@ -67,9 +71,33 @@ const DatosGeneralesEquipoPage = () => {
       try {
         setLoadingMetrics(true);
         const metricsData = await getMetrics(equipo.id, token);
-        if (metricsData && metricsData.userMetrics) {
+        const data = await getMetricsP(equipo.id, token);
+
+        if (metricsData && metricsData.userMetrics && data.globalIssueDetails) {
           console.log('Datos obtenidos en fetchMetrics:', metricsData);
-          setMetrics(metricsData.userMetrics);
+          const combinedMetrics = metricsData.userMetrics.map((baseMetric) => {
+            // Buscamos las métricas de proyecto de este usuario en concreto
+            const projectMetric = data.userMetrics.find(
+              (pm) => pm.username === baseMetric.username,
+            );
+
+            return {
+              ...baseMetric,
+              userStories: projectMetric ? projectMetric.userStories : 0,
+              userStoriesClosed: projectMetric
+                ? projectMetric.userStoriesClosed
+                : 0,
+              tasks: projectMetric ? projectMetric.tasks : 0,
+              tasksClosed: projectMetric ? projectMetric.tasksClosed : 0,
+            };
+          });
+
+          console.log(
+            'Métricas fusionadas listas para pintar:',
+            combinedMetrics,
+          );
+
+          setMetrics(combinedMetrics);
         } else {
           console.error(
             'La respuesta no tiene las claves esperadas:',

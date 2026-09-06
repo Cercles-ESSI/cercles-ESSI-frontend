@@ -75,6 +75,10 @@ const EquipoMetricsHistory = () => {
         Carregant el dashboard analític...
       </p>
     );
+
+  const handleBackClick = () => {
+    navigate(-1);
+  };
   if (error)
     return (
       <p style={{ padding: '40px', marginLeft: '260px', color: 'red' }}>
@@ -86,22 +90,14 @@ const EquipoMetricsHistory = () => {
     <div className="historical-page">
       <Sidebar />
       <div className="historical-content">
-        {/* PESTAÑAS SUPERIORES */}
-        <div className="top-tabs">
-          <button
-            className="tab-button"
-            onClick={() => navigate(`/equipo/${equipoId}/datos_generales`)}
-          >
-            Overview
-          </button>
-          <button className="tab-button active">Historical</button>
-        </div>
-
+        <button className="back-button" onClick={handleBackClick}>
+          Torna enrere
+        </button>
         <div className="dashboard-card">
           {/* CABECERA */}
           <div className="dashboard-header">
-            <h1>Historical trend analysis</h1>
-            <p>Explore how each student evolves across key metrics.</p>
+            <h1>Anàlisi del historial de mètriques</h1>
+            <p>Explorar com evoluciona cada estudiant durant els sprints</p>
           </div>
 
           {/* BARRA DE FILTROS */}
@@ -113,26 +109,26 @@ const EquipoMetricsHistory = () => {
               </select>
             </div>
             <div className="filter-group">
-              <label>From</label>
+              <label>Desde</label>
               <input type="date" className="filter-input" />
             </div>
             <div className="filter-group">
-              <label>To</label>
+              <label>Fins a</label>
               <input type="date" className="filter-input" />
             </div>
             <div className="filter-group">
-              <label>Student</label>
+              <label>Estudiant</label>
               <select className="filter-input">
-                <option>All users</option>
+                <option>Tots els usuaris</option>
               </select>
             </div>
             <div className="filter-group">
-              <label>Metric</label>
+              <label>Metrica</label>
               <select className="filter-input">
-                <option>All metrics</option>
+                <option>Totes les mètriques</option>
               </select>
             </div>
-            <button className="clear-btn">Clear Filters</button>
+            <button className="clear-btn">Esborrar filtres</button>
           </div>
 
           {/* CUADRÍCULA DE GRÁFICOS */}

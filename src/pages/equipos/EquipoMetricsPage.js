@@ -48,6 +48,44 @@ const EquipoMetricsPage = () => {
   const [error, setError] = useState(null);
   const [localEstudiantesIds, setLocalEstudiantesIds] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  const formatUltimaSincronizacion = (fechaIso) => {
+    if (!fechaIso) return 'Mai';
+
+    const fecha = new Date(fechaIso);
+    return fecha.toLocaleString('ca-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const handleManualSync = async () => {
+    if (!id || !localOrg) return;
+
+    try {
+      setIsSyncing(true);
+      const isGitHub = true;
+      await syncGitHubMetrics(
+        localOrg,
+        localEstudiantesIds,
+        equipo.id,
+        token,
+        isGitHub,
+      );
+      console.log('Sincronització manual de Taiga completada.');
+
+      // Volvemos a cargar los datos para que la pantalla se actualice con lo nuevo
+      await fetchMetrics(equipo.id);
+    } catch (err) {
+      console.error('Error en sync manual:', err);
+    } finally {
+      setIsSyncing(false); // Ocultamos el texto
+    }
+  };
 
   useEffect(() => {
     const fetchEquipoDetalle = async () => {
@@ -134,7 +172,7 @@ const EquipoMetricsPage = () => {
     return () => clearInterval(interval);
   }, [loadingEquipo, loadingMetrics]);
 
-  if (loadingEquipo || loadingMetrics) {
+  if (loadingEquipo) {
     return (
       <div className="loading-container">
         <img src={loadingGif} alt="Cargando..." className="loading-gif" />
@@ -163,9 +201,68 @@ const EquipoMetricsPage = () => {
           Mètriques de GitHub de l&apos;equip {equipo.nombre} pel curs{' '}
           {equipo.nombreAsignatura}
         </h1>
-        <h2 style={{ marginBottom: '2rem' }}>
-          Nom de l&apos;organització: {org}
-        </h2>
+
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start', // Cambiado a flex-start para que no se descentre con la altura de la fecha
+            flexWrap: 'wrap',
+            gap: '1rem',
+            marginBottom: '20px', // Un poco de espacio antes de la tabla
+          }}
+        >
+          <h3>Nom de l&apos;organització {org}</h3>
+
+          {/* Contenedor vertical para el botón y la fecha */}
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+              gap: '8px',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+              {isSyncing && (
+                <span
+                  style={{
+                    color: '#0284c7',
+                    fontWeight: '600',
+                    fontSize: '0.95rem',
+                  }}
+                >
+                  Sincronitzant dades... ⏳
+                </span>
+              )}
+              <button
+                onClick={handleManualSync}
+                disabled={isSyncing || loadingMetrics}
+                style={{
+                  padding: '10px 16px',
+                  backgroundColor: isSyncing ? '#94a3b8' : '#0ea5e9',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: isSyncing ? 'not-allowed' : 'pointer',
+                  fontWeight: 'bold',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                  transition: 'background-color 0.2s',
+                }}
+              >
+                Forçar Sincronització
+              </button>
+            </div>
+
+            {/*Texto de última actualización */}
+            <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+              Última actualització:{' '}
+              {equipo
+                ? formatUltimaSincronizacion(equipo.ultimaSincronizacionGit)
+                : 'Desconeguda'}
+            </span>
+          </div>
+        </div>
 
         {/* --- INICIO DE LA TARJETA (CARD) PARA LA TABLA --- */}
         <div className="card">
