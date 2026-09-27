@@ -96,7 +96,7 @@ const EquipoMetricsTaiga = () => {
 
     try {
       setIsSyncing(true); // Mostramos el texto de "Sincronizando..."
-      await syncTaigaMetrics(id, proyecto, token);
+      await syncTaigaMetrics(id, proyecto, token, true);
       console.log('Sincronització manual de Taiga completada.');
 
       // Volvemos a cargar los datos para que la pantalla se actualice con lo nuevo
@@ -104,7 +104,7 @@ const EquipoMetricsTaiga = () => {
     } catch (err) {
       console.error('Error en sync manual:', err);
     } finally {
-      setIsSyncing(false); // Ocultamos el texto
+      setIsSyncing(false);
     }
   };
 
@@ -145,7 +145,7 @@ const EquipoMetricsTaiga = () => {
   // 3. Sincronización en segundo plano de TAIGA (Solo se ejecuta al entrar a la página)
   useEffect(() => {
     if (id && proyecto) {
-      syncTaigaMetrics(id, proyecto, token)
+      syncTaigaMetrics(id, proyecto, token, false)
         .then(() => {
           console.log('Sincronització de Taiga completada.');
           // Tras sincronizar, recargamos los datos con el filtro que esté puesto

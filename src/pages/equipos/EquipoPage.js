@@ -168,7 +168,7 @@ const EquipoPage = () => {
         equipo.evaluadorId,
         equipo.estudiantes.map((miembro) => miembro.id),
         TaigaUrl,
-        equipo.taigaUserProf,
+        equipo.id,
         token,
       );
       setValidationResultsT(resultados);

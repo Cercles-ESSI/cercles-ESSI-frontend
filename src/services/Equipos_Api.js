@@ -310,7 +310,7 @@ export const validarProyecto = async (
   profesorId,
   miembrosIds,
   proyectoUrl,
-  profesorTaiga,
+  equipoId,
   token,
 ) => {
   try {
@@ -324,7 +324,7 @@ export const validarProyecto = async (
         profesorId,
         miembrosIds,
         proyectoUrl,
-        profesorTaiga,
+        equipoId,
       }),
     });
     if (!response.ok) {
@@ -544,9 +544,14 @@ export const getTaigaMetrics = async (
 };
 
 // 2. Forzar la sincronización en segundo plano con la API de Taiga
-export const syncTaigaMetrics = async (equipoId, proyecto, token) => {
+export const syncTaigaMetrics = async (
+  equipoId,
+  proyecto,
+  token,
+  syncAll = false,
+) => {
   const response = await fetch(
-    `${API_BASE_URL}/taiga/equipo/${equipoId}/sincronizar?proyecto=${proyecto}`,
+    `${API_BASE_URL}/taiga/equipo/${equipoId}/sincronizar?proyecto=${proyecto}&syncAll=${syncAll}`,
     {
       method: 'POST',
       headers: {

@@ -18,6 +18,7 @@ const VerificarCurso = () => {
     profesores,
     estudiantes,
     gestiotasques,
+    linkTaiga,
   } = state;
 
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
@@ -96,6 +97,7 @@ const VerificarCurso = () => {
       githubAsignatura: state.githubAsignatura,
       tokenGithubAsignatura: state.tokenGithub,
       gestionTareas: state.gestiotasques,
+      linkTaiga: state.linkTaiga,
     };
 
     crearCurso(newCursoData)
@@ -174,6 +176,12 @@ const VerificarCurso = () => {
             <strong>Les tasques del curs es gestionen amb: </strong>{' '}
             {state.gestiotasques}
           </p>
+          {state.gestiotasques === 'Taiga' && (
+            <p>
+              <strong>Enllaç de Taiga per les tasques del curs son: </strong>{' '}
+              {state.linkTaiga}
+            </p>
+          )}
         </div>
         <h2>Períodes d&apos;avaluació</h2>
         <div className="evaluation-periods">
@@ -265,6 +273,7 @@ const VerificarCurso = () => {
                   cuatrimestre,
                   selectedProfesores: profesores.map((prof) => prof.id),
                   gestiotasques,
+                  linkTaiga,
                 },
               })
             }

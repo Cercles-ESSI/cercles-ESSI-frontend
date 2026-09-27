@@ -30,6 +30,7 @@ const CrearCurso = () => {
   const idProfesorLoggeado = parseInt(localStorage.getItem('id'));
   const [githubAsignatura, setGithubAsignatura] = useState('');
   const [tokenGithub, setTokenGithub] = useState('');
+  const [linkTaiga, setLinkTaiga] = useState('');
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -173,6 +174,7 @@ const CrearCurso = () => {
           periodosEvaluacion,
           githubAsignatura,
           tokenGithub,
+          linkTaiga,
         },
       });
     } catch (error) {
@@ -349,6 +351,20 @@ const CrearCurso = () => {
                 Taiga
               </label>
             </div>
+            {gestiotasques === 'Taiga' && (
+              <div className="form-group-curso">
+                <label htmlFor="linkTaiga">Enllaç de l&apos;API de Taiga</label>
+
+                <input
+                  type="text"
+                  id="linkTaiga"
+                  placeholder="https://taiga.com"
+                  value={linkTaiga}
+                  onChange={(e) => setLinkTaiga(e.target.value)}
+                  required
+                />
+              </div>
+            )}
           </div>
 
           <div className="form-group-curso">
