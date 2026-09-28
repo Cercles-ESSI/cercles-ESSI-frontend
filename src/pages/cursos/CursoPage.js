@@ -195,6 +195,7 @@ const CursoPage = () => {
       githubAsignatura: editedCurso.githubAsignatura,
       tokenGithubAsignatura: editedCurso.tokenGithub,
       gestionTareas: editedCurso.gestionTareas,
+      linkTaiga: editedCurso.urlTaiga,
       estudiantesAñadir: newEstudiante.nombre
         ? [
             {
@@ -553,9 +554,42 @@ const CursoPage = () => {
                         />{' '}
                         Taiga
                       </label>
+                      {/* URL de Taiga al editar */}
+                      {editedCurso.gestionTareas === 'Taiga' && (
+                        <div className="taiga-url">
+                          <label className="label">URL de Taiga</label>
+                          <input
+                            type="url"
+                            value={editedCurso.urlTaiga || ''}
+                            onChange={(e) =>
+                              setEditedCurso({
+                                ...editedCurso,
+                                urlTaiga: e.target.value,
+                              })
+                            }
+                            placeholder="https://taiga.com"
+                          />
+                        </div>
+                      )}
                     </div>
                   ) : (
-                    <span className="value">{curso.gestionTareas}</span>
+                    <>
+                      <span className="value">{curso.gestionTareas}</span>
+
+                      {/* URL de Taiga al visualizar */}
+                      {curso.gestionTareas === 'Taiga' && curso.urlTaiga && (
+                        <div className="taiga-url">
+                          <span className="label">URL de Taiga</span>
+                          <a
+                            href={curso.urlTaiga}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {curso.urlTaiga}
+                          </a>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
 

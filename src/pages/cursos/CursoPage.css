@@ -227,6 +227,54 @@ html {
   gap: 0.4rem;
 }
 
+.curso-page .taiga-url {
+  width: 100%;
+  flex-basis: 100%;
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  box-sizing: border-box;
+}
+
+.curso-page .taiga-url .label {
+  display: block;
+}
+
+.curso-page .taiga-url input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.6rem 0.8rem;
+
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+
+  font-size: 1rem;
+  font-family: inherit;
+  color: #1e293b;
+  background-color: white;
+}
+
+.curso-page .taiga-url input:focus {
+  outline: none;
+  border-color: #6c9975;
+  box-shadow: 0 0 0 3px rgba(108, 153, 117, 0.1);
+}
+
+.curso-page .taiga-url a {
+  color: #4f7f61;
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.curso-page .taiga-url a:hover {
+  text-decoration: underline;
+}
+
 .curso-page .info-item .label {
   font-size: 0.85rem;
   text-transform: uppercase;
@@ -292,6 +340,8 @@ html {
 .curso-page .radio-group {
   display: flex;
   gap: 1rem;
+  flex-wrap: wrap;
+  width: 100%;
 }
 .curso-page .radio-label {
   display: flex;

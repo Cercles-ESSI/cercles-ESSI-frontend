@@ -23,7 +23,9 @@ import {
 const formatUltimaSincronizacion = (fechaIso) => {
   if (!fechaIso) return 'Mai';
 
-  const fecha = new Date(fechaIso);
+  const fechaUTC = fechaIso.endsWith('Z') ? fechaIso : `${fechaIso}Z`;
+  const fecha = new Date(fechaUTC);
+
   return fecha.toLocaleString('ca-ES', {
     day: '2-digit',
     month: '2-digit',

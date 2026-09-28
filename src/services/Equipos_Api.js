@@ -435,12 +435,13 @@ export const syncGitHubMetrics = async (
   idEquipo,
   token,
   isGitHub,
+  syncAll = false,
 ) => {
   if (!org || !estudiantesIds?.length || !idEquipo) {
     throw new Error('Faltan parámetros necesarios.');
   }
 
-  const queryParams = `estudiantesIds=${estudiantesIds.join('&estudiantesIds=')}&isGithub=${isGitHub}`;
+  const queryParams = `estudiantesIds=${estudiantesIds.join('&estudiantesIds=')}&isGithub=${isGitHub}&syncAll=${syncAll}`;
   const url = `${API_BASE_URL}/github/equipo/${idEquipo}/metrics/${org}?${queryParams}`;
   console.log('url ', url);
 
