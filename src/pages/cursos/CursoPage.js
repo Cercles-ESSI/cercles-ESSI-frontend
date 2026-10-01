@@ -293,52 +293,88 @@ const CursoPage = () => {
 
   const handleExportExcel = () => {
     if (!curso || !curso.equipos || curso.equipos.length === 0) return;
+    const maxMiembros = Math.max(
+      ...curso.equipos.map((equipo) =>
+        equipo.miembros ? Object.keys(equipo.miembros).length : 0,
+      ),
+      0,
+    );
 
     const datosExcel = [];
 
-    curso.equipos.forEach((equipo, index) => {
-      if (index > 0) {
-        datosExcel.push({
-          "Nom de l'Equip": '',
-          Estudiant: '',
-          'Correu electrònic': '',
-          Grup: '',
-          Validat: '',
-        });
+    curso.equipos.forEach((equipo) => {
+      // Extraemos los nombres de los estudiantes (miembros) del equipo
+      const nombresMiembros = equipo.miembros
+        ? Object.keys(equipo.miembros)
+        : [];
+
+      // Construimos el objeto de la fila base para el equipo
+      const urlT = equipo.taigaPrj
+        ? `${curso.urlTaiga}/${equipo.taigaPrj}`
+        : '';
+      const urlGithubOrg = equipo.org ? `https://github.com/${equipo.org}` : '';
+      const filaEquipo = {
+        Assignatura: curso.nombreAsignatura || '',
+        "Identificador (Team#) de l'Equip": equipo.nombreEquipo || '',
+
+        'URL del projecte Taiga': urlT,
+        'URL de la organització a GitHub': urlGithubOrg,
+      };
+
+      for (let i = 0; i < maxMiembros; i++) {
+        const numMembre = i + 1;
+        const nombreEstudiante = nombresMiembros[i] || '';
+
+        const usernameTaiga =
+          equipo.usuariosTaiga && equipo.usuariosTaiga[nombreEstudiante]
+            ? equipo.usuariosTaiga[nombreEstudiante]
+            : '';
+
+        const usernameGithub =
+          equipo.usuariosGithub && equipo.usuariosGithub[nombreEstudiante]
+            ? equipo.usuariosGithub[nombreEstudiante]
+            : '';
+
+        filaEquipo[`Membre #${numMembre}: Nom i Cognoms`] = nombreEstudiante;
+        filaEquipo[`Membre #${numMembre}: username a Taiga`] = usernameTaiga;
+        filaEquipo[`Membre #${numMembre}: username a Github`] = usernameGithub;
       }
 
-      if (equipo.miembros && Object.keys(equipo.miembros).length > 0) {
-        Object.entries(equipo.miembros).forEach(([nombre, grupo]) => {
-          const correo =
-            equipo.correos && equipo.correos[nombre]
-              ? equipo.correos[nombre]
-              : 'Sense correu';
-
-          datosExcel.push({
-            "Nom de l'Equip": equipo.nombreEquipo,
-            Estudiant: nombre,
-            'Correu electrònic': correo,
-            Grup: grupo || 'Sense Grup',
-            Validat: equipo.validado ? 'Sí' : 'No',
-          });
-        });
-      }
+      datosExcel.push(filaEquipo);
     });
 
     // Crear la hoja y el libro de Excel
     const worksheet = XLSX.utils.json_to_sheet(datosExcel);
+
     const anchuraColumnas = [
-      { wch: 25 }, // A: Nom de l'Equip
-      { wch: 35 }, // B: Estudiant
-      { wch: 40 }, // C: Correu electrònic
-      { wch: 15 }, // D: Grup
-      { wch: 10 }, // E: Validat
+      { wch: 20 }, // Assignatura
+      { wch: 40 }, // Identificador (Team#)...
+      { wch: 50 }, // URL Taiga...
+      { wch: 60 }, // URL Github...
+      // Miembro 1
+      { wch: 25 },
+      { wch: 25 },
+      { wch: 25 },
+      // Miembro 2
+      { wch: 25 },
+      { wch: 25 },
+      { wch: 25 },
+      // Miembro 3
+      { wch: 25 },
+      { wch: 25 },
+      { wch: 25 },
+      // Miembro 4
+      { wch: 25 },
+      { wch: 25 },
+      { wch: 25 },
     ];
     worksheet['!cols'] = anchuraColumnas;
+
     const workbook = XLSX.utils.book_new();
+
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Equips');
 
-    // Descargar el archivo con el nombre de la asignatura
+    // Descargar el archivo
     XLSX.writeFile(workbook, `Equips_${curso.nombreAsignatura}.xlsx`);
   };
 
