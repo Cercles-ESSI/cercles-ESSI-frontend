@@ -624,7 +624,7 @@ const EquipoMetricsTaiga = () => {
                                   data: datosMetricas.estadisticasHistorias.metricasEstudiantes.map(
                                     (m) => m.historiasAbiertas || 0,
                                   ),
-                                  backgroundColor: '#A7D2CB',
+                                  backgroundColor: '#67B7B5',
                                   stack: 'Stack_HU',
                                 },
                                 {
@@ -635,7 +635,7 @@ const EquipoMetricsTaiga = () => {
                                       m.totalHistoriasCerradas ||
                                       0,
                                   ),
-                                  backgroundColor: '#5b8263',
+                                  backgroundColor: '#8E9ED1',
                                   stack: 'Stack_HU',
                                 },
                                 {
@@ -643,7 +643,7 @@ const EquipoMetricsTaiga = () => {
                                   data: datosMetricas.estadisticasTareas.metricasEstudiantes.map(
                                     (m) => m.tareasAbiertas || 0,
                                   ),
-                                  backgroundColor: '#F2D388',
+                                  backgroundColor: '#F2C66D',
                                   stack: 'Stack_Tasques',
                                 },
                                 {
@@ -651,7 +651,7 @@ const EquipoMetricsTaiga = () => {
                                   data: datosMetricas.estadisticasTareas.metricasEstudiantes.map(
                                     (m) => m.tareasCerradas || 0,
                                   ),
-                                  backgroundColor: '#e5c158',
+                                  backgroundColor: '#E89A78',
                                   stack: 'Stack_Tasques',
                                 },
                               ],

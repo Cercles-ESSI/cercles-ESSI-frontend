@@ -27,12 +27,22 @@ const EquipoMetricsHistory = () => {
   const [error, setError] = useState(null);
 
   const COLORES_LINEAS = [
-    '#84cc16', // Verde claro
-    '#3b82f6', // Azul
-    '#f97316', // Naranja
-    '#06b6d4', // Cyan
-    '#8b5cf6', // Morado
-    '#ef4444', // Rojo
+    '#E27D60', // Terracota anaranjado
+    '#85CDCA', // Turquesa suave
+    '#E8A87C', // Melocotón
+    '#C38D9E', // Rosa malva viejo
+    '#41B3A3', // Verde agua intenso
+    '#8D94BA', // Azul lila
+    '#F3B562', // Mostaza vivo
+    '#D96459', // Rojo ladrillo
+    '#76B096', // Verde salvia
+    '#A37C40', // Bronce / Ocre oscuro
+    '#F2E394', // Amarillo vainilla
+    '#B8C4BB', // Gris verdoso muy claro
+    '#E9C46A', // (Extra por si hay >12 alumnos)
+    '#F4A3B3',
+    '#D4A5A5',
+    '#B5838D',
   ];
 
   useEffect(() => {
@@ -139,10 +149,17 @@ const EquipoMetricsHistory = () => {
           ) : (
             <div className="charts-grid">
               <TrendChartCard
-                title="Closed Tasks"
+                title="Tasques tancades"
                 datos={datosHistoricos}
                 estudiantes={estudiantes}
                 dataKeyPadre="tareasCerradas"
+                colores={COLORES_LINEAS}
+              />
+              <TrendChartCard
+                title="Story Points"
+                datos={datosHistoricos}
+                estudiantes={estudiantes}
+                dataKeyPadre="storyPoints"
                 colores={COLORES_LINEAS}
               />
               <TrendChartCard
@@ -153,17 +170,10 @@ const EquipoMetricsHistory = () => {
                 colores={COLORES_LINEAS}
               />
               <TrendChartCard
-                title="Modified Lines"
+                title="Líneas modificades"
                 datos={datosHistoricos}
                 estudiantes={estudiantes}
                 dataKeyPadre="lineasModificadas"
-                colores={COLORES_LINEAS}
-              />
-              <TrendChartCard
-                title="Tasks"
-                datos={datosHistoricos}
-                estudiantes={estudiantes}
-                dataKeyPadre="storyPoints"
                 colores={COLORES_LINEAS}
               />
             </div>

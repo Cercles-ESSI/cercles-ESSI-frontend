@@ -4,11 +4,22 @@ import {
   getEquipoDetalle,
   getMetrics,
   getMetricsP,
+  getTaigaMetrics,
 } from '../../services/Equipos_Api';
 import { getEvaluacionesPorEquipo } from '../../services/Evaluaciones_Api';
 import Sidebar from '../../components/common/Sidebar';
 import './DatosGeneralesEquipoPage.css';
 import loadingGif from '../../assets/images/15-28-43-29_512.webp';
+import {
+  Radar,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  ResponsiveContainer,
+  Legend,
+  Tooltip,
+} from 'recharts';
 
 const DatosGeneralesEquipoPage = () => {
   const { equipoId } = useParams();
@@ -70,40 +81,89 @@ const DatosGeneralesEquipoPage = () => {
     const fetchMetrics = async () => {
       try {
         setLoadingMetrics(true);
-        const metricsData = await getMetrics(equipo.id, token);
-        const data = await getMetricsP(equipo.id, token);
 
-        if (metricsData && metricsData.userMetrics && data.globalIssueDetails) {
-          console.log('Datos obtenidos en fetchMetrics:', metricsData);
+        // 1. Obtenemos las métricas base de GitHub (Commits, líneas, etc.)
+        const metricsData = await getMetrics(equipo.id, token);
+
+        // 2. Determinamos si el equipo usa Taiga o GitHub Projects
+
+        const usaTaiga =
+          equipo.gestionTareas?.toUpperCase() === 'TAIGA' &&
+          equipo.taigaProyecto;
+
+        let projectData = null;
+
+        // 3. Hacemos la petición condicional
+        if (usaTaiga) {
+          projectData = await getTaigaMetrics(
+            equipo.id,
+            equipo.taigaProyecto,
+            token,
+          );
+          console.log('Datos de Taiga obtenidos:', projectData);
+        } else {
+          projectData = await getMetricsP(equipo.id, token);
+          console.log('Datos de GitHub Projects obtenidos:', projectData);
+        }
+
+        if (metricsData && metricsData.userMetrics) {
+          // 4. Fusionamos los datos independientemente de la fuente
           const combinedMetrics = metricsData.userMetrics.map((baseMetric) => {
-            // Buscamos las métricas de proyecto de este usuario en concreto
-            const projectMetric = data.userMetrics.find(
-              (pm) => pm.username === baseMetric.username,
-            );
+            let userStories = 0;
+            let userStoriesClosed = 0;
+            let tasks = 0;
+            let tasksClosed = 0;
+
+            if (usaTaiga && projectData) {
+              const listaTareasTaiga =
+                projectData.estadisticasTareas?.metricasEstudiantes || [];
+              const listaHistoriasTaiga =
+                projectData.estadisticasHistorias?.metricasEstudiantes || [];
+
+              const metricasTareasAlumno = listaTareasTaiga.find(
+                (t) => t.nombreEstudiante === baseMetric.nombre,
+              );
+
+              const metricasHistoriasAlumno = listaHistoriasTaiga.find(
+                (h) => h.nombreEstudiante === baseMetric.nombre,
+              );
+
+              if (metricasTareasAlumno) {
+                tasks = metricasTareasAlumno.totalTareas || 0;
+                tasksClosed = metricasTareasAlumno.tareasCerradas || 0;
+              }
+
+              if (metricasHistoriasAlumno) {
+                userStories =
+                  metricasHistoriasAlumno.totalHistoriasParticipadas || 0;
+                userStoriesClosed =
+                  metricasHistoriasAlumno.historiasCerradas || 0;
+              }
+            } else if (!usaTaiga && projectData && projectData.userMetrics) {
+              const ghMetric = projectData.userMetrics.find(
+                (pm) => pm.username === baseMetric.username,
+              );
+
+              if (ghMetric) {
+                userStories = ghMetric.userStories || 0;
+                userStoriesClosed = ghMetric.userStoriesClosed || 0;
+                tasks = ghMetric.tasks || 0;
+                tasksClosed = ghMetric.tasksClosed || 0;
+              }
+            }
 
             return {
               ...baseMetric,
-              userStories: projectMetric ? projectMetric.userStories : 0,
-              userStoriesClosed: projectMetric
-                ? projectMetric.userStoriesClosed
-                : 0,
-              tasks: projectMetric ? projectMetric.tasks : 0,
-              tasksClosed: projectMetric ? projectMetric.tasksClosed : 0,
+              userStories,
+              userStoriesClosed,
+              tasks,
+              tasksClosed,
             };
           });
 
-          console.log(
-            'Métricas fusionadas listas para pintar:',
-            combinedMetrics,
-          );
-
           setMetrics(combinedMetrics);
         } else {
-          console.error(
-            'La respuesta no tiene las claves esperadas:',
-            metricsData,
-          );
-          setError('Error: La respuesta del servidor no es vàlida.');
+          setError('Error: La resposta del servidor no és vàlida.');
         }
       } catch (error) {
         console.error('Error en fetchMetrics:', error.message);
@@ -150,6 +210,61 @@ const DatosGeneralesEquipoPage = () => {
   const handleBackClick = () => {
     navigate(-1);
   };
+
+  const colors = [
+    '#E27D60', // Terracota anaranjado
+    '#85CDCA', // Turquesa suave
+    '#E8A87C', // Melocotón
+    '#C38D9E', // Rosa malva viejo
+    '#41B3A3', // Verde agua intenso
+    '#8D94BA', // Azul lila
+    '#F3B562', // Mostaza vivo
+    '#D96459', // Rojo ladrillo
+    '#76B096', // Verde salvia
+    '#A37C40', // Bronce / Ocre oscuro
+    '#F2E394', // Amarillo vainilla
+    '#B8C4BB', // Gris verdoso muy claro
+    '#E9C46A', // (Extra por si hay >12 alumnos)
+    '#F4A3B3',
+    '#D4A5A5',
+    '#B5838D',
+  ];
+
+  const getRadarData = (metricsData) => {
+    if (!metricsData || metricsData.length === 0) return [];
+
+    const axes = [
+      { key: 'totalCommits', label: 'Commits' },
+      { key: 'userStories', label: 'Històries' },
+      { key: 'tasks', label: 'Tasques' },
+      { key: 'userStoriesClosed', label: 'Històries Tancades' },
+      { key: 'tasksClosed', label: 'Tasques Tancades' },
+    ];
+
+    return axes.map((axis) => {
+      const dataPoint = { metric: axis.label };
+
+      // Calculamos el total de esta métrica en el equipo para sacar porcentajes
+      const totalMetrica = metricsData.reduce(
+        (sum, m) => sum + (m[axis.key] || 0),
+        0,
+      );
+
+      metricsData.forEach((m) => {
+        const valorBruto = m[axis.key] || 0;
+        // Normalizamos a porcentaje (0-100) para que el gráfico quede proporcionado.
+        // Si un alumno hizo 53 commits de 179 totales, es un ~30%.
+        const porcentaje =
+          totalMetrica === 0 ? 0 : (valorBruto / totalMetrica) * 100;
+
+        dataPoint[m.nombre] = Math.round(porcentaje);
+      });
+
+      return dataPoint;
+    });
+  };
+
+  const radarData = getRadarData(metrics);
 
   return (
     <div className="datos-generales-page">
@@ -379,6 +494,34 @@ const DatosGeneralesEquipoPage = () => {
           <p>
             No hi ha dades disponibles de històries d&apos;usuari i tasques.
           </p>
+        )}
+        {/* Gráfico Spider / Radar */}
+        {metrics.length > 0 && (
+          <div style={{ marginTop: '40px', width: '100%', height: '400px' }}>
+            <h2 style={{ textAlign: 'center' }}>Balanç de contribucions (%)</h2>
+            <ResponsiveContainer width="100%" height="100%">
+              <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
+                <PolarGrid />
+                <PolarAngleAxis dataKey="metric" />
+                {/* El eje de radio va de 0 a 100 porque usamos porcentajes */}
+                <PolarRadiusAxis angle={30} domain={[0, 100]} />
+
+                {metrics.map((m, index) => (
+                  <Radar
+                    key={m.username}
+                    name={m.nombre}
+                    dataKey={m.nombre}
+                    stroke={colors[index % colors.length]}
+                    fill={colors[index % colors.length]}
+                    fillOpacity={0.5}
+                  />
+                ))}
+
+                <Tooltip formatter={(value) => `${value}%`} />
+                <Legend />
+              </RadarChart>
+            </ResponsiveContainer>
+          </div>
         )}
       </div>
     </div>

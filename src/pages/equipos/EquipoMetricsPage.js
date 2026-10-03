@@ -377,22 +377,22 @@ const EquipoMetricsPage = () => {
                         {
                           data: metrics.map((m) => m.totalCommits),
                           backgroundColor: [
-                            '#E27D60', // Terracota anaranjado
-                            '#85CDCA', // Turquesa suave
-                            '#E8A87C', // Melocotón
-                            '#C38D9E', // Rosa malva viejo
-                            '#41B3A3', // Verde agua intenso
-                            '#8D94BA', // Azul lila
-                            '#F3B562', // Mostaza vivo
-                            '#D96459', // Rojo ladrillo
-                            '#76B096', // Verde salvia
-                            '#A37C40', // Bronce / Ocre oscuro
-                            '#F2E394', // Amarillo vainilla
-                            '#B8C4BB', // Gris verdoso muy claro
-                            '#E9C46A', // (Extra por si hay >12 alumnos)
-                            '#F4A3B3',
-                            '#D4A5A5',
-                            '#B5838D',
+                            '#7FA7C4', // Azul cielo
+                            '#88BFA8', // Verde menta
+                            '#E9A27F', // Melocotón
+                            '#C78FA5', // Rosa malva
+                            '#69B3B0', // Turquesa
+                            '#9A91C4', // Lavanda
+                            '#E3B85C', // Mostaza
+                            '#D77C72', // Coral
+                            '#91B28C', // Salvia
+                            '#B4936A', // Ocre
+                            '#E7D58B', // Vainilla
+                            '#AEBBB5', // Gris verdoso
+                            '#D99B76', // Terracota
+                            '#A99ACB', // Lila
+                            '#D69AA8', // Rosa empolvado
+                            '#7FA9AA', // Verde azulado
                           ],
                         },
                       ],
@@ -431,12 +431,12 @@ const EquipoMetricsPage = () => {
                         {
                           label: 'Línies afegides',
                           data: metrics.map((m) => m.linesAdded),
-                          backgroundColor: '#6C9975',
+                          backgroundColor: '#81B29A',
                         },
                         {
                           label: 'Línies eliminades',
                           data: metrics.map((m) => m.linesRemoved),
-                          backgroundColor: '#BB6365',
+                          backgroundColor: '#E07A5F',
                         },
                       ],
                     }}
