@@ -342,6 +342,8 @@ const EquipoPage = () => {
         No s&apos;ha trobat la informació de l&apos;equip.
       </div>
     );
+  const iteracionIniciada = equipo?.iteracionIniciada || false;
+  const puedeModificar = isProfesor || !iteracionIniciada;
 
   if (!equipo.activo) {
     return (
@@ -388,16 +390,18 @@ const EquipoPage = () => {
           </div>
 
           <div className="header-actions">
-            <button
-              className="btn-danger"
-              onClick={() => {
-                setPopupAction('borrar');
-                setShowPopup(true);
-              }}
-            >
-              Esborrar equip
-            </button>
-            {!isProfesor && (
+            {isProfesor && (
+              <button
+                className="btn-danger"
+                onClick={() => {
+                  setPopupAction('borrar');
+                  setShowPopup(true);
+                }}
+              >
+                Esborrar equip
+              </button>
+            )}
+            {!isProfesor && puedeModificar && (
               <button
                 className="btn-warning"
                 onClick={() => {
@@ -610,12 +614,14 @@ const EquipoPage = () => {
                       {equipo.gitOrganizacion}
                     </a>
                   </p>
-                  <button
-                    className="btn-danger btn-small"
-                    onClick={() => setShowDisconnectPopup(true)}
-                  >
-                    Desconnectar
-                  </button>
+                  {puedeModificar && (
+                    <button
+                      className="btn-danger btn-small"
+                      onClick={() => setShowDisconnectPopup(true)}
+                    >
+                      Desconnectar
+                    </button>
+                  )}
                 </div>
               ) : (
                 <div className="config-setup-box">
@@ -749,12 +755,14 @@ const EquipoPage = () => {
                         {equipo.taigaProyecto}
                       </a>
                     </p>
-                    <button
-                      className="btn-danger btn-small"
-                      onClick={() => setShowDisconnectPopupTaiga(true)}
-                    >
-                      Desconnectar
-                    </button>
+                    {puedeModificar && (
+                      <button
+                        className="btn-danger btn-small"
+                        onClick={() => setShowDisconnectPopup(true)}
+                      >
+                        Desconnectar
+                      </button>
+                    )}
                   </div>
                 ) : (
                   <div className="config-setup-box">
@@ -850,7 +858,7 @@ const EquipoPage = () => {
         <div className="modern-card">
           <div className="section-header">
             <h2>Membres de l&apos;equip</h2>
-            {!isEditing && (
+            {!isEditing && puedeModificar && (
               <button
                 className="btn-secondary btn-small"
                 onClick={handleEditToggle}
@@ -859,6 +867,12 @@ const EquipoPage = () => {
               </button>
             )}
           </div>
+          {!puedeModificar && !isProfesor && (
+            <p className="text-muted small mb-4">
+              L&apos;edició de membres està bloquejada perquè ja s&apos;ha
+              iniciat la primera iteració.
+            </p>
+          )}
 
           {isEditing ? (
             <div className="edit-members-layout">
