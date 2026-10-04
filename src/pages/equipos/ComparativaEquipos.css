@@ -1,0 +1,274 @@
+/* Contenedor principal */
+.comparative-dashboard {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* Título principal basado en tu h1 */
+.page-title {
+  text-align: center;
+  margin-bottom: 35px;
+  font-size: 2.2rem;
+  color: #2c3e50;
+  font-weight: 700;
+}
+
+/* Grid de métricas superiores */
+.metrics-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+  margin-bottom: 30px;
+  width: 100%;
+}
+
+/* Tarjeta individual */
+.metric-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  padding: 30px;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  flex: 1 1 30%;
+  min-width: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.metric-title {
+  color: #64748b;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 10px 0;
+  padding: 0;
+  font-weight: 600;
+}
+
+.metric-value {
+  font-size: 2.5rem;
+  color: #2c3e50;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Contenedor de la tabla*/
+.table-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  padding: 30px;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  margin-bottom: 30px;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* Estilos de la tabla copiados de tu diseño */
+.comparative-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.comparative-table th,
+.comparative-table td {
+  border-bottom: 1px solid #edf2f7;
+  padding: 16px 15px;
+  text-align: center;
+  color: #4a5568;
+}
+
+.comparative-table th {
+  background-color: #f8fafc;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.comparative-table tr:hover {
+  background-color: #f8fafc;
+}
+
+.team-name {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* Celda de progreso con diseño a medida usando tu color verde (#6c9975) */
+.progress-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  white-space: nowrap;
+}
+
+.progress-text {
+  font-size: 0.9rem;
+  color: #555;
+  min-width: 45px;
+  text-align: right;
+}
+
+.progress-track {
+  width: 120px;
+  background-color: #edf2f7;
+  height: 10px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #6c9975; /* Tu verde característico */
+  transition: width 0.3s ease;
+}
+
+.progress-percentage {
+  font-size: 0.85rem;
+  color: #64748b;
+  min-width: 35px;
+  text-align: left;
+}
+
+/* Etiquetas (Badges) para el balance interno */
+.badge {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.badge-optimo {
+  background-color: #ccffcc; /* El verde claro de tu highlight-green */
+  color: #2b7a2b;
+}
+
+.badge-aceptable {
+  background-color: #fef3c7; /* Tono cálido suave */
+  color: #92400e;
+}
+
+.badge-desequilibrado {
+  background-color: #fee2e2; /* Tono rojizo suave */
+  color: #991b1b;
+}
+
+.badge-default {
+  background-color: #f1f5f9;
+  color: #64748b;
+}
+
+/* Pantalla de carga y errores */
+.loading-container {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.loading-text {
+  font-size: 1.2rem;
+  color: #555;
+}
+
+.error-message {
+  text-align: center;
+  color: #e53e3e;
+  padding: 20px;
+  background-color: #fff5f5;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.chart-card {
+  margin-bottom: 30px;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.chart-wrapper {
+  width: 100%;
+  height: 400px;
+  max-width: 100%;
+  box-sizing: border-box;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0 10px;
+}
+
+.chart-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2c3e50;
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+/* Tooltip de Recharts */
+.custom-tooltip {
+  background-color: #ffffff;
+  padding: 12px 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+}
+
+.tooltip-title {
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 6px 0;
+  font-size: 1rem;
+}
+
+.tooltip-text {
+  font-size: 0.85rem;
+  color: #4a5568;
+  margin: 4px 0;
+}
+
+/* Leyenda del gráfico */
+.chart-legend {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 25px;
+  font-size: 0.85rem;
+  color: #4a5568;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.legend-optimo {
+  background-color: #2b7a2b;
+}
+
+.legend-aceptable {
+  background-color: #d69e2e;
+}
+
+.legend-desequilibrado {
+  background-color: #e53e3e;
+}

@@ -19,6 +19,7 @@ import DatosGeneralesEquipoPage from './pages/equipos/DatosGeneralesEquipoPage';
 import EvaluacionPage from './pages/evaluaciones/EvaluacionPage';
 import EvaluacionesGeneralesPage from './pages/evaluaciones/EvaluacionesGeneralesPage';
 import MisEvaluacionesPage from './pages/evaluaciones/MisEvaluacionesPage';
+import ComparativaEquipos from './pages/equipos/ComparativaEquipos';
 import NotFoundPage from './pages/common/NotFoundPage';
 import ForbiddenPage from './pages/common/ForbiddenPage';
 
@@ -160,6 +161,14 @@ function App() {
           element={
             <PrivateRoute requiredRole="Estudiante">
               <MisEvaluacionesPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/equipos/:cursoId/comparativa"
+          element={
+            <PrivateRoute requiredRole="Profesor">
+              <ComparativaEquipos />
             </PrivateRoute>
           }
         />

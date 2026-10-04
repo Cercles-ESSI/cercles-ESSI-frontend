@@ -156,7 +156,7 @@ const EquipoMetricsHistory = () => {
                 colores={COLORES_LINEAS}
               />
               <TrendChartCard
-                title="Story Points"
+                title="Punts d'Esforç (SP)"
                 datos={datosHistoricos}
                 estudiantes={estudiantes}
                 dataKeyPadre="storyPoints"

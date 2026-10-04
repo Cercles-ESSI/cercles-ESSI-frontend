@@ -712,6 +712,15 @@ const CursoPage = () => {
                 <div style={{ display: 'flex', gap: '10px' }}>
                   <button
                     className="btn-secondary btn-small"
+                    onClick={() => navigate(`/equipos/${curso.id}/comparativa`)}
+                    disabled={
+                      isEditing || !curso.equipos || curso.equipos.length === 0
+                    }
+                  >
+                    Veure Comparativa
+                  </button>
+                  <button
+                    className="btn-secondary btn-small"
                     onClick={handleExportExcel}
                     disabled={
                       isEditing || !curso.equipos || curso.equipos.length === 0
