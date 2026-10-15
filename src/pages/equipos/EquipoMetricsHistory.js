@@ -27,22 +27,22 @@ const EquipoMetricsHistory = () => {
   const [error, setError] = useState(null);
 
   const COLORES_LINEAS = [
-    '#E27D60', // Terracota anaranjado
-    '#85CDCA', // Turquesa suave
-    '#E8A87C', // Melocotón
-    '#C38D9E', // Rosa malva viejo
-    '#41B3A3', // Verde agua intenso
-    '#8D94BA', // Azul lila
-    '#F3B562', // Mostaza vivo
-    '#D96459', // Rojo ladrillo
-    '#76B096', // Verde salvia
-    '#A37C40', // Bronce / Ocre oscuro
-    '#F2E394', // Amarillo vainilla
-    '#B8C4BB', // Gris verdoso muy claro
-    '#E9C46A', // (Extra por si hay >12 alumnos)
-    '#F4A3B3',
-    '#D4A5A5',
-    '#B5838D',
+    '#7FA7C4', // Azul cielo
+    '#88BFA8', // Verde menta
+    '#E9A27F', // Melocotón
+    '#C78FA5', // Rosa malva
+    '#69B3B0', // Turquesa
+    '#9A91C4', // Lavanda
+    '#E3B85C', // Mostaza
+    '#D77C72', // Coral
+    '#91B28C', // Salvia
+    '#B4936A', // Ocre
+    '#E7D58B', // Vainilla
+    '#AEBBB5', // Gris verdoso
+    '#D99B76', // Terracota
+    '#A99ACB', // Lila
+    '#D69AA8', // Rosa empolvado
+    '#7FA9AA',
   ];
 
   useEffect(() => {
@@ -190,6 +190,7 @@ const TrendChartCard = ({
   estudiantes,
   dataKeyPadre,
   colores,
+  isPercentage = false, // Nueva propiedad con valor por defecto false
 }) => {
   const datosPlanos = datos.map((item) => {
     const iteracionData = { name: item.fechaGuardado || item.iteracion };
@@ -223,23 +224,23 @@ const TrendChartCard = ({
             tickMargin={10}
           />
 
-          {/* Eje Y con formato de porcentaje (0% a 100%) */}
+          {/* Eje Y dinámico: Solo aplica % y dominio [0,100] si isPercentage es true */}
           <YAxis
             tick={{ fill: '#94a3b8', fontSize: 11 }}
-            tickFormatter={(value) => `${value}%`}
-            domain={[0, 100]}
+            tickFormatter={isPercentage ? (value) => `${value}%` : undefined}
+            domain={isPercentage ? [0, 100] : ['auto', 'auto']}
           />
 
+          {/* Tooltip dinámico */}
           <Tooltip
             contentStyle={{
               borderRadius: '8px',
               border: 'none',
               boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
             }}
-            formatter={(value) => [`${value}%`]}
+            formatter={isPercentage ? (value) => [`${value}%`] : undefined}
           />
 
-          {/* Leyenda arriba del todo */}
           <Legend
             verticalAlign="top"
             iconType="circle"
@@ -249,7 +250,7 @@ const TrendChartCard = ({
           {estudiantes.map((nombre, index) => (
             <Line
               key={nombre}
-              type="monotone" // Líneas suaves
+              type="monotone"
               dataKey={nombre}
               name={nombre}
               stroke={colores[index % colores.length]}
